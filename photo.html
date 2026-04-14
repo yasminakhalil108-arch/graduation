@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مولد الصور 🎨</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-size: 18px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            text-align: center;
+            display: none;
+        }
+
+        .result img {
+            max-width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+            border-left: 4px solid #c33;
+            word-wrap: break-word;
+        }
+
+        .success-text {
+            color: #667eea;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .notes {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #555;
+            border-left: 4px solid #667eea;
+        }
+
+        .notes strong {
+            color: #667eea;
+        }
+
+        .download-btn {
+            background: #4CAF50;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .download-btn:hover {
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .info {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 مولد الصور من الوصف</h1>
+
+        <div class="input-group">
+            <input 
+                type="text" 
+                id="prompt" 
+                placeholder="اكتب وصف الصورة..."
+            >
+            <button id="generateBtn" onclick="generateImage()">توليد</button>
+        </div>
+
+        <div class="error" id="error"></div>
+        <div class="info" id="info"></div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>جاري توليد الصورة... قد يستغرق 20-60 ثانية</p>
+        </div>
+
+        <div class="result" id="result">
+            <p class="success-text">✅ تم توليد الصورة بنجاح!</p>
+            <img id="resultImage" alt="الصورة المولدة">
+            <button class="download-btn" id="downloadBtn" onclick="downloadImage()">⬇️ تحميل الصورة</button>
+        </div>
+
+        <div class="notes">
+            <strong>💡 نصائح:</strong>
+            <ul style="margin-top: 10px;">
+                <li>اكتب وصفاً بالإنجليزية للحصول على نتائج أفضل</li>
+                <li>مثال: "orange cat sitting on red chair, digital art, high quality"</li>
+                <li>قد تستغرق الصورة الأولى وقتاً أطول (طبيعي)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const HF_API_TOKEN = "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";
+        const MODELS = [
+            "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5",
+            "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1"
+        ];
+        
+        let currentImageUrl = null;
+        let currentModelIndex = 0;
+
+        async function generateImage() {
+            const prompt = document.getElementById('prompt').value.trim();
+            
+            if (!prompt) {
+                showError('الرجاء كتابة وصف للصورة');
+                return;
+            }
+
+            hideError();
+            hideInfo();
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('downloadBtn').style.display = 'none';
+            document.getElementById('generateBtn').disabled = true;
+
+            showInfo('💡 ملاحظة: قد يستغرق الأمر دقيقة أو أكثر في المرة الأولى');
+
+            await tryGenerateWithModels(prompt);
+        }
+
+        async function tryGenerateWithModels(prompt, modelIndex = 0) {
+            if (modelIndex >= MODELS.length) {
+                showError('❌ عذراً، فشل التوليد. تحقق من الإنترنت أو جرب لاحقاً');
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('generateBtn').disabled = false;
+                return;
+            }
+
+            const API_URL = MODELS[modelIndex];
+
+            try {
+                const response = await fetch(API_URL, {
+                    headers: {
+                        Authorization: `Bearer ${HF_API_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    method: "POST",
+                    body: JSON.stringify({ inputs: prompt }),
+                });
+
+                if (response.status === 503) {
+                    showInfo('⏳ النموذج يتحمل... يرجى الانتظار قليلاً');
+                    setTimeout(() => tryGenerateWithModels(prompt, modelIndex), 5000);
+                    return;
+                }
+
+                if (!response.ok) {
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        const error = await response.json();
+                        throw new Error(error.error || `خطأ: ${response.status}`);
+                    } else {
+                        throw new Error(`خطأ الخادم: ${response.status}`);
+                    }
+                }
+
+                const blob = await response.blob();
+                if (blob.size === 0) {
+                    throw new Error('الصورة فارغة - جرب مجدداً');
+                }
+
+                const url = URL.createObjectURL(blob);
+                currentImageUrl = url;
+
+                document.getElementById('resultImage').src = url;
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('downloadBtn').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+                hideInfo();
+
+            } catch (error) {
+                console.error('محاولة فشلت:', error);
+                
+                if (modelIndex < MODELS.length - 1) {
+                    showInfo('🔄 جاري المحاولة مع نموذج آخر...');
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    await tryGenerateWithModels(prompt, modelIndex + 1);
+                } else {
+                    showError('❌ خطأ: ' + error.message);
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('generateBtn').disabled = false;
+                }
+            }
+        }
+
+        function downloadImage() {
+            if (currentImageUrl) {
+                const a = document.createElement('a');
+                a.href = currentImageUrl;
+                a.download = `generated-image-${Date.now()}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.innerHTML = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function showInfo(message) {
+            const infoDiv = document.getElementById('info');
+            infoDiv.textContent = message;
+            infoDiv.style.display = 'block';
+        }
+
+        function hideInfo() {
+            document.getElementById('info').style.display = 'none';
+        }
+
+        document.getElementById('prompt').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateImage();
+            }
+        });
+    </script>
+</body>
+</html>

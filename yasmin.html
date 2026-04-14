@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>المساعد الذكي - ساين إت</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Cairo', 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%);
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #5e35b1 0%, #3949ab 100%);
+      color: white;
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e0e0e8;
+    }
+
+    .box h3 {
+      color: #5e35b1;
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    video {
+      width: 100%;
+      height: 300px;
+      border-radius: 12px;
+      background: #1a1a2e;
+      object-fit: cover;
+      border: 3px solid #5e35b1;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 15px 0 10px;
+    }
+
+    button {
+      flex: 1;
+      min-width: 100px;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #5e35b1 0%, #3949ab 100%);
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(94, 53, 177, 0.3);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    button.danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    button.secondary {
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    }
+
+    #text {
+      margin-top: 15px;
+      font-size: 18px;
+      background: linear-gradient(135deg, #f0f4ff 0%, #fef3c7 100%);
+      padding: 15px;
+      border-radius: 12px;
+      min-height: 80px;
+      word-break: break-word;
+      border: 2px solid #5e35b1;
+      line-height: 1.6;
+    }
+
+    .sign-result {
+      margin-top: 18px;
+      padding: 15px;
+      background: #f3f4f6;
+      border-radius: 12px;
+      border: 2px dashed #5e35b1;
+    }
+
+    .sign-reply {
+      font-weight: bold;
+      color: #5e35b1;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .sign-images {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .sign-image-item {
+      background: white;
+      border-radius: 12px;
+      padding: 10px;
+      border: 2px solid #5e35b1;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .sign-image-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(94, 53, 177, 0.3);
+    }
+
+    .sign-image-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+
+    .sign-image-item .label {
+      font-size: 13px;
+      color: #333;
+      margin-top: 8px;
+      font-weight: bold;
+    }
+
+    .status {
+      color: #666;
+      font-size: 13px;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #f5f5f5;
+      border-radius: 8px;
+    }
+
+    .status.recording {
+      color: #ef4444;
+      background: #ffe0e0;
+      animation: blink 1s infinite;
+    }
+
+    .status.success {
+      color: #10b981;
+      background: #e8f5e9;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .edit-section {
+      margin: 10px 0;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .edit-section input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #5e35b1;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .chatbase-container {
+      width: 100%;
+      height: 500px;
+      border: 2px solid #5e35b1;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    footer {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #999;
+      text-align: center;
+      padding: 20px;
+      margin-top: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+        padding: 10px;
+      }
+      video {
+        height: 250px;
+      }
+      .sign-image-item img {
+        width: 60px;
+        height: 60px;
+      }
+      .chatbase-container {
+        height: 400px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>🤖 المساعد الذكي - ساين إت | ترجمة الصوت إلى لغة إشارة</header>
+
+<div class="container">
+
+  <!-- قسم الكاميرا -->
+  <div class="box">
+    <h3>📷 <span>كاميرا لغة الإشارة</span></h3>
+    <video id="video" autoplay playsinline muted></video>
+    
+    <div class="button-group">
+      <button id="startCameraBtn" onclick="startCamera()">▶️ تشغيل الكاميرا</button>
+      <button id="stopCameraBtn" onclick="stopCamera()" disabled class="danger">⏹️ إيقاف</button>
+    </div>
+    <div class="status" id="cameraStatus">⚪ الكاميرا متوقفة</div>
+  </div>
+
+  <!-- قسم الصوت وترجمة الإشارة -->
+  <div class="box">
+    <h3>🎤 <span>تحويل الصوت إلى لغة إشارة</span></h3>
+
+    <div class="button-group">
+      <button id="startVoiceBtn" onclick="startVoiceRecognition()">🎤 بدء التسجيل</button>
+      <button id="stopVoiceBtn" onclick="stopVoiceRecognition()" disabled class="danger">⏹️ إيقاف</button>
+    </div>
+
+    <div class="button-group">
+      <button id="speakBtn" onclick="speakText()" disabled>🔊 نطق النص</button>
+      <button id="copyBtn" onclick="copyText()" disabled>📋 نسخ</button>
+      <button id="clearBtn" onclick="clearText()" class="secondary">🗑️ مسح</button>
+    </div>
+
+    <div id="text">🎤 اضغط على "بدء التسجيل" وتحدث...</div>
+
+    <div class="edit-section">
+      <input type="text" id="editInput" placeholder="✏️ يمكنك تعديل النص هنا...">
+      <button onclick="updateTextFromEdit()">تحديث</button>
+    </div>
+
+    <div class="sign-result">
+      <div class="sign-reply">🤟 صور لغة الإشارة:</div>
+      <div class="sign-images" id="signImages">
+        <div style="color: #999;">سيظهر هنا صور الإشارات</div>
+      </div>
+    </div>
+
+    <div class="status" id="voiceStatus">⚪ الميكروفون متوقف</div>
+  </div>
+
+</div>
+
+<!-- قسم Chatbase -->
+<div style="max-width: 1400px; margin: 0 auto 20px; padding: 0 20px;">
+  <div class="box">
+    <h3>💬 <span>تحدث مع مساعد Chatbase الذكي</span></h3>
+    <div id="chatbase-container" class="chatbase-container"></div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 ساين إت - تعليم لغة الإشارة | جميع الحقوق محفوظة</p>
+  <p style="margin-top: 8px; font-size: 12px;">🎤 تحدث → 📝 نص عربي → 🤟 صور إشارة → 💬 دردشة مع Chatbase</p>
+</footer>
+
+<script>
+  // ========== قاموس لغة الإشارة ==========
+  const signLanguageDictionary = {
+    'مرحبا': { word: 'مرحبا', img: 'https://cdn-icons-png.flaticon.com/512/1077/1077114.png' },
+    'السلام': { word: 'السلام', img: 'https://cdn-icons-png.flaticon.com/512/263/263115.png' },
+    'شكرا': { word: 'شكرا', img: 'https://cdn-icons-png.flaticon.com/512/190/190411.png' },
+    'حب': { word: 'حب', img: 'https://cdn-icons-png.flaticon.com/512/833/833472.png' },
+    'أحب': { word: 'أحب', img: 'https://cdn-icons-png.flaticon.com/512/833/833472.png' },
+    'سعيد': { word: 'سعيد', img: 'https://cdn-icons-png.flaticon.com/512/2584/2584602.png' },
+    'حزين': { word: 'حزين', img: 'https://cdn-icons-png.flaticon.com/512/2584/2584617.png' },
+    'نعم': { word: 'نعم', img: 'https://cdn-icons-png.flaticon.com/512/190/190406.png' },
+    'لا': { word: 'لا', img: 'https://cdn-icons-png.flaticon.com/512/190/190407.png' },
+    'أنا': { word: 'أنا', img: 'https://cdn-icons-png.flaticon.com/512/1077/1077063.png' },
+    'أنت': { word: 'أنت', img: 'https://cdn-icons-png.flaticon.com/512/1077/1077115.png' },
+    'ماء': { word: 'ماء', img: 'https://cdn-icons-png.flaticon.com/512/2874/2874459.png' },
+    'طعام': { word: 'طعام', img: 'https://cdn-icons-png.flaticon.com/512/706/706164.png' },
+    'بيت': { word: 'بيت', img: 'https://cdn-icons-png.flaticon.com/512/25/25694.png' },
+    'مدرسة': { word: 'مدرسة', img: 'https://cdn-icons-png.flaticon.com/512/3062/3062632.png' },
+    'طبيب': { word: 'طبيب', img: 'https://cdn-icons-png.flaticon.com/512/3043/3043386.png' },
+    'صديق': { word: 'صديق', img: 'https://cdn-icons-png.flaticon.com/512/147/147144.png' },
+    'جميل': { word: 'جميل', img: 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png' },
+    'كبير': { word: 'كبير', img: 'https://cdn-icons-png.flaticon.com/512/190/190408.png' },
+    'صغير': { word: 'صغير', img: 'https://cdn-icons-png.flaticon.com/512/190/190409.png' },
+    'أسد': { word: 'أسد', img: 'https://cdn-icons-png.flaticon.com/512/1211/1211115.png' },
+    'قطة': { word: 'قطة', img: 'https://cdn-icons-png.flaticon.com/512/616/616408.png' },
+    'كلب': { word: 'كلب', img: 'https://cdn-icons-png.flaticon.com/512/1998/1998627.png' },
+    'ورد': { word: 'ورد', img: 'https://cdn-icons-png.flaticon.com/512/1321/1321258.png' },
+    'شمس': { word: 'شمس', img: 'https://cdn-icons-png.flaticon.com/512/3222/3222683.png' },
+    'قمر': { word: 'قمر', img: 'https://cdn-icons-png.flaticon.com/512/2594/2594322.png' }
+  };
+
+  // متغيرات
+  let cameraStream = null;
+  let recognition = null;
+  let currentText = '';
+
+  // ========== الكاميرا ==========
+  async function startCamera() {
+    try {
+      const video = document.getElementById('video');
+      cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      video.srcObject = cameraStream;
+      
+      document.getElementById('startCameraBtn').disabled = true;
+      document.getElementById('stopCameraBtn').disabled = false;
+      document.getElementById('cameraStatus').innerHTML = '✅ الكاميرا تعمل';
+      document.getElementById('cameraStatus').className = 'status success';
+    } catch (error) {
+      document.getElementById('cameraStatus').innerHTML = '❌ لا يمكن الوصول للكاميرا';
+    }
+  }
+
+  function stopCamera() {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+    document.getElementById('video').srcObject = null;
+    document.getElementById('startCameraBtn').disabled = false;
+    document.getElementById('stopCameraBtn').disabled = true;
+    document.getElementById('cameraStatus').innerHTML = '⚪ الكاميرا متوقفة';
+    document.getElementById('cameraStatus').className = 'status';
+  }
+
+  // ========== التعرف على الصوت ==========
+  function startVoiceRecognition() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      document.getElementById('text').innerHTML = '❌ متصفحك لا يدعم التعرف على الصوت';
+      return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = 'ar-SA';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+      document.getElementById('startVoiceBtn').disabled = true;
+      document.getElementById('stopVoiceBtn').disabled = false;
+      document.getElementById('voiceStatus').innerHTML = '🎤 جاري التسجيل... تحدث الآن';
+      document.getElementById('voiceStatus').className = 'status recording';
+      document.getElementById('text').innerHTML = '🎤 جاري الاستماع...';
+    };
+
+    recognition.onresult = (event) => {
+      let finalText = '';
+      for (let i = 0; i < event.results.length; i++) {
+        finalText += event.results[i][0].transcript;
+      }
+      document.getElementById('text').innerHTML = finalText;
+      currentText = finalText;
+      translateToSignLanguage(finalText);
+      document.getElementById('speakBtn').disabled = false;
+      document.getElementById('copyBtn').disabled = false;
+      document.getElementById('editInput').value = finalText;
+    };
+
+    recognition.onerror = () => {
+      document.getElementById('text').innerHTML = '❌ لم يتم التعرف على الصوت';
+      stopVoiceRecognition();
+    };
+
+    recognition.onend = () => {
+      document.getElementById('startVoiceBtn').disabled = false;
+      document.getElementById('stopVoiceBtn').disabled = true;
+      document.getElementById('voiceStatus').innerHTML = '✅ تم التعرف على النص';
+      document.getElementById('voiceStatus').className = 'status success';
+      setTimeout(() => {
+        if (document.getElementById('voiceStatus').innerHTML === '✅ تم التعرف على النص') {
+          document.getElementById('voiceStatus').innerHTML = '⚪ الميكروفون متوقف';
+          document.getElementById('voiceStatus').className = 'status';
+        }
+      }, 2000);
+    };
+
+    recognition.start();
+  }
+
+  function stopVoiceRecognition() {
+    if (recognition) {
+      recognition.stop();
+      recognition = null;
+    }
+    document.getElementById('startVoiceBtn').disabled = false;
+    document.getElementById('stopVoiceBtn').disabled = true;
+    document.getElementById('voiceStatus').innerHTML = '⚪ تم إيقاف التسجيل';
+    document.getElementById('voiceStatus').className = 'status';
+  }
+
+  // ========== ترجمة النص إلى صور إشارة ==========
+  function translateToSignLanguage(text) {
+    const container = document.getElementById('signImages');
+    const words = text.split(' ');
+    const matchedImages = [];
+    
+    for (let word of words) {
+      word = word.replace(/[،،؛؟!]/g, '');
+      if (signLanguageDictionary[word]) {
+        matchedImages.push(signLanguageDictionary[word]);
+      } else {
+        for (let key in signLanguageDictionary) {
+          if (word.includes(key) || key.includes(word)) {
+            matchedImages.push(signLanguageDictionary[key]);
+            break;
+          }
+        }
+      }
+    }
+    
+    if (matchedImages.length === 0) {
+      container.innerHTML = '<div style="color: #999;">😊 لا توجد إشارات مطابقة للكلمات المدخلة</div>';
+      return;
+    }
+    
+    container.innerHTML = matchedImages.map(item => `
+      <div class="sign-image-item" onclick="showImageModal('${item.img}', '${item.word}')">
+        <img src="${item.img}" alt="${item.word}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png'">
+        <div class="label">🤟 ${item.word}</div>
+      </div>
+    `).join('');
+  }
+
+  function showImageModal(imgSrc, word) {
+    let modal = document.getElementById('imageModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'imageModal';
+      modal.style.cssText = `display:none;position:fixed;z-index:99999;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;cursor:pointer;`;
+      modal.onclick = function() { this.style.display = 'none'; };
+      document.body.appendChild(modal);
+    }
+    modal.innerHTML = `<div style="text-align:center;padding:20px;"><img src="${imgSrc}" style="max-width:85vw;max-height:75vh;border-radius:16px;"><div style="color:white;margin-top:20px;">🤟 ${word}</div><div style="color:#ccc;margin-top:10px;">✖ اضغط للإغلاق</div></div>`;
+    modal.style.display = 'flex';
+  }
+
+  // ========== وظائف النص ==========
+  function updateTextFromEdit() {
+    const newText = document.getElementById('editInput').value.trim();
+    if (newText) {
+      currentText = newText;
+      document.getElementById('text').innerHTML = newText;
+      translateToSignLanguage(newText);
+      document.getElementById('speakBtn').disabled = false;
+      document.getElementById('copyBtn').disabled = false;
+    }
+  }
+
+  function speakText() {
+    const text = document.getElementById('text').innerHTML;
+    if (text && text !== '🎤 اضغط على "بدء التسجيل" وتحدث...') {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ar-SA';
+      utterance.rate = 0.9;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    }
+  }
+
+  function copyText() {
+    const text = document.getElementById('text').innerHTML;
+    if (text && text !== '🎤 اضغط على "بدء التسجيل" وتحدث...') {
+      navigator.clipboard.writeText(text);
+      showToast('✅ تم نسخ النص');
+    }
+  }
+
+  function clearText() {
+    document.getElementById('text').innerHTML = '🎤 اضغط على "بدء التسجيل" وتحدث...';
+    document.getElementById('signImages').innerHTML = '<div style="color: #999;">سيظهر هنا صور الإشارات</div>';
+    document.getElementById('editInput').value = '';
+    currentText = '';
+    document.getElementById('speakBtn').disabled = true;
+    document.getElementById('copyBtn').disabled = true;
+  }
+  
+  function showToast(message) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.style.cssText = `
+        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+        background: #5e35b1; color: white; padding: 12px 24px;
+        border-radius: 50px; z-index: 9999; font-size: 14px;
+        animation: fadeOut 2s ease forwards;
+      `;
+      document.body.appendChild(toast);
+    }
+    toast.innerHTML = message;
+    toast.style.display = 'block';
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 2000);
+  }
+
+  // ========== تحميل Chatbase ==========
+  function loadChatbase() {
+    const container = document.getElementById('chatbase-container');
+    if (container) {
+      // إضافة iframe لـ Chatbase
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.chatbase.co/chatbot-iframe/41qfAmm_LuIhzoNDIoJCv';
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = 'none';
+      container.appendChild(iframe);
+    }
+  }
+
+  // ========== تشغيل عند تحميل الصفحة ==========
+  document.addEventListener('DOMContentLoaded', () => {
+    loadChatbase();
+    document.getElementById('editInput').placeholder = '✏️ اكتب أو عدل النص هنا...';
+  });
+</script>
+
+<!-- Chatbase script -->
+<script>
+(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="41qfAmm_LuIhzoNDIoJCv";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+</script>
+
+</body>
+</html>

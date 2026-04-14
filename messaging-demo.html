@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نموذج الرسائل والتلخيص - Sign It</title>
+
+  <script src="thread-manager.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .info {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .card h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 5px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.3s;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    textarea {
+      min-height: 100px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn.secondary {
+      background: #f0f0f0;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .btn.secondary:hover {
+      background: #e8e8e8;
+    }
+
+    .messages-container {
+      background: #f9f9f9;
+      border-radius: 5px;
+      padding: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      min-height: 100px;
+    }
+
+    .message {
+      background: white;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-left: 4px solid #667eea;
+      border-radius: 3px;
+      font-size: 14px;
+    }
+
+    .message.own {
+      background: #e8eaf6;
+      border-left-color: #764ba2;
+    }
+
+    .message-time {
+      font-size: 12px;
+      color: #999;
+      margin-top: 5px;
+    }
+
+    .summary-box {
+      background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+      border: 2px solid #667eea;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .summary-box h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .summary-text {
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .key-points {
+      background: white;
+      padding: 10px;
+      border-radius: 3px;
+      margin-top: 10px;
+    }
+
+    .key-point {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 5px;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .key-point:before {
+      content: "•";
+      color: #667eea;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+
+    .thread-item {
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .thread-item:hover {
+      background: #f0f0f0;
+      border-left-color: #667eea;
+    }
+
+    .thread-title {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .thread-date {
+      font-size: 12px;
+      color: #999;
+      margin-top: 3px;
+    }
+
+    .status {
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 13px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .status.loading {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .status.success {
+      background: #e8f5e9;
+      color: #388e3c;
+    }
+
+    .status.error {
+      background: #ffebee;
+      color: #d32f2f;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .tab-btn {
+      background: #f0f0f0;
+      color: #666;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .focus-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .focus-options label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      cursor: pointer;
+      font-weight: 400;
+    }
+
+    .focus-options input[type="radio"] {
+      width: auto;
+      margin: 0;
+      border: none;
+    }
+
+    @media (max-width: 768px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>💬 نظام الرسائل والتلخيص الذكي</h1>
+      <p class="info">إنشاء محادثات، إرسال رسائل، والحصول على تلخيصات ذكية باستخدام OpenAI</p>
+    </div>
+
+    <div class="main-grid">
+      <!-- Left: Create Thread & Send Message -->
+      <div class="card">
+        <h2><i class="fas fa-plus-circle"></i> الرسائل والمحادثات</h2>
+
+        <div class="status" id="status"></div>
+
+        <!-- Create Thread Form -->
+        <div class="form-group">
+          <label>📌 عنوان المحادثة</label>
+          <input type="text" id="threadTitle" placeholder="مثال: درس - الأرقام من 1 إلى 10">
+        </div>
+
+        <div class="form-group">
+          <label>📝 الوصف (اختياري)</label>
+          <textarea id="threadDescription" placeholder="وصف المحادثة..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>👥 نوع المحادثة</label>
+          <select id="threadType">
+            <option value="individual">محادثة فريدة (أنا + AI)</option>
+            <option value="group">مجموعة نقاش</option>
+          </select>
+        </div>
+
+        <button class="btn" onclick="createThread()">
+          <i class="fas fa-rocket"></i> إنشاء محادثة جديدة
+        </button>
+
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+        <!-- Send Message Form -->
+        <h3 style="color: #667eea; margin-bottom: 10px; font-size: 16px;">📤 إرسال رسالة</h3>
+        
+        <div class="form-group">
+          <label>اختر محادثة</label>
+          <select id="selectedThread">
+            <option value="">-- لم يتم اختيار محادثة --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>الرسالة</label>
+          <textarea id="messageContent" placeholder="اكتب رسالتك هنا..."></textarea>
+        </div>
+
+        <button class="btn" onclick="sendMessage()">
+          <i class="fas fa-paper-plane"></i> إرسال رسالة
+        </button>
+      </div>
+
+      <!-- Right: Messages & Actions -->
+      <div class="card">
+        <h2><i class="fas fa-comments"></i> الرسائل والتلخيصات</h2>
+
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('messages')">الرسائل</button>
+          <button class="tab-btn" onclick="switchTab('summary')">التلخيص</button>
+        </div>
+
+        <!-- Messages Tab -->
+        <div id="messages-tab">
+          <div id="messagesList" class="messages-container">
+            <p style="text-align: center; color: #999;">لا توجد رسائل</p>
+          </div>
+          <button class="btn secondary" onclick="loadMessages()">
+            <i class="fas fa-sync"></i> تحديث الرسائل
+          </button>
+        </div>
+
+        <!-- Summary Tab -->
+        <div id="summary-tab" style="display: none;">
+          <h3 style="color: #667eea; margin-bottom: 10px; font-size: 14px;">🎯 نوع التلخيص</h3>
+          
+          <div class="focus-options">
+            <label>
+              <input type="radio" name="focusArea" value="general" checked> عام
+            </label>
+            <label>
+              <input type="radio" name="focusArea" value="learning"> تعلم
+            </label>
+            <label>
+              <input type="radio" name="focusArea" value="progress"> تقدم
+            </label>
+            <label>
+              <input type="radio" name="focusArea" value="areas_to_improve"> تحسين
+            </label>
+          </div>
+
+          <button class="btn" onclick="generateSummary()">
+            <i class="fas fa-wand-magic-sparkles"></i> توليد التلخيص الذكي
+          </button>
+
+          <div id="summaryContent" style="margin-top: 15px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Threads -->
+    <div class="card">
+      <h2><i class="fas fa-list"></i> محادثاتي</h2>
+      <div id="threadsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+        <p style="color: #999;">جاري التحميل...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentThreadId = null
+
+    // Create Thread
+    async function createThread() {
+      try {
+        showStatus('جاري إنشاء المحادثة...', 'loading')
+        
+        const title = document.getElementById('threadTitle').value
+        const description = document.getElementById('threadDescription').value
+        const threadType = document.getElementById('threadType').value
+
+        if (!title) {
+          showStatus('❌ يجب إدخال عنوان المحادثة', 'error')
+          return
+        }
+
+        const thread = await threadManager.createThread(title, description, threadType)
+        
+        currentThreadId = thread.id
+        document.getElementById('selectedThread').value = thread.id
+        
+        showStatus('✅ تم إنشاء المحادثة بنجاح!', 'success')
+        document.getElementById('threadTitle').value = ''
+        document.getElementById('threadDescription').value = ''
+        
+        loadThreads()
+      } catch (error) {
+        showStatus(`❌ خطأ: ${error.message}`, 'error')
+      }
+    }
+
+    // Send Message
+    async function sendMessage() {
+      try {
+        if (!currentThreadId) {
+          showStatus('❌ يجب اختيار محادثة أولاً', 'error')
+          return
+        }
+
+        showStatus('جاري إرسال الرسالة...', 'loading')
+        
+        const content = document.getElementById('messageContent').value
+        if (!content) {
+          showStatus('❌ يجب إدخال نص الرسالة', 'error')
+          return
+        }
+
+        await threadManager.sendMessage(currentThreadId, content)
+        
+        document.getElementById('messageContent').value = ''
+        showStatus('✅ تم إرسال الرسالة بنجاح!', 'success')
+        
+        loadMessages()
+      } catch (error) {
+        showStatus(`❌ خطأ: ${error.message}`, 'error')
+      }
+    }
+
+    // Load Messages
+    async function loadMessages() {
+      try {
+        if (!currentThreadId) {
+          document.getElementById('messagesList').innerHTML = '<p style="text-align: center; color: #999;">لا توجد محادثة مختارة</p>'
+          return
+        }
+
+        showStatus('جاري تحميل الرسائل...', 'loading')
+        
+        const messages = await threadManager.getThreadMessages(currentThreadId, 20)
+        
+        const html = messages.map(msg => `
+          <div class="message ${msg.user_id === threadManager.currentUser?.id ? 'own' : ''}">
+            <strong>${msg.user_id.slice(0, 8)}:</strong> ${msg.content}
+            <div class="message-time">${new Date(msg.created_at).toLocaleTimeString('ar-EG')}</div>
+          </div>
+        `).join('')
+        
+        document.getElementById('messagesList').innerHTML = html || '<p style="text-align: center; color: #999;">لا توجد رسائل</p>'
+        showStatus('✅ تم تحديث الرسائل', 'success')
+      } catch (error) {
+        showStatus(`❌ خطأ: ${error.message}`, 'error')
+      }
+    }
+
+    // Generate Summary
+    async function generateSummary() {
+      try {
+        if (!currentThreadId) {
+          showStatus('❌ يجب اختيار محادثة أولاً', 'error')
+          return
+        }
+
+        const focusArea = document.querySelector('input[name="focusArea"]:checked').value
+        
+        showStatus('🤖 جاري توليد التلخيص باستخدام AI...', 'loading')
+        
+        const result = await threadManager.generateSummary(currentThreadId, focusArea)
+        
+        const summaryHtml = `
+          <div class="summary-box">
+            <h3>📋 التلخيص</h3>
+            <p class="summary-text">${result.summary}</p>
+            ${result.key_points && result.key_points.length > 0 ? `
+              <div class="key-points">
+                <strong style="color: #667eea;">🎯 النقاط الرئيسية:</strong>
+                ${result.key_points.map(point => `<div class="key-point">${point}</div>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `
+        
+        document.getElementById('summaryContent').innerHTML = summaryHtml
+        showStatus('✅ تم توليد التلخيص بنجاح!', 'success')
+      } catch (error) {
+        showStatus(`❌ خطأ: ${error.message}`, 'error')
+      }
+    }
+
+    // Load Threads
+    async function loadThreads() {
+      try {
+        const threads = await threadManager.getUserThreads()
+        
+        const html = threads.map(thread => `
+          <div class="thread-item" onclick="selectThread('${thread.id}')">
+            <div class="thread-title">${thread.title}</div>
+            <div class="thread-date">${new Date(thread.created_at).toLocaleDateString('ar-EG')}</div>
+          </div>
+        `).join('')
+        
+        document.getElementById('threadsList').innerHTML = html || '<p style="color: #999;">لا توجد محادثات</p>'
+      } catch (error) {
+        console.error('Error loading threads:', error)
+      }
+    }
+
+    // Select Thread
+    function selectThread(threadId) {
+      currentThreadId = threadId
+      document.getElementById('selectedThread').value = threadId
+      loadMessages()
+    }
+
+    // Switch Tab
+    function switchTab(tab) {
+      document.getElementById('messages-tab').style.display = tab === 'messages' ? 'block' : 'none'
+      document.getElementById('summary-tab').style.display = tab === 'summary' ? 'block' : 'none'
+      
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'))
+      event.target.classList.add('active')
+      
+      if (tab === 'messages') {
+        loadMessages()
+      }
+    }
+
+    // Show Status
+    function showStatus(message, type) {
+      const status = document.getElementById('status')
+      status.textContent = message
+      status.className = `status show ${type}`
+      
+      if (type === 'success' || type === 'error') {
+        setTimeout(() => status.classList.remove('show'), 3000)
+      }
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        loadThreads()
+      }, 500)
+    })
+  </script>
+</body>
+</html>
