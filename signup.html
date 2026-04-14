@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="supabase.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign It - إنشاء حساب جديد</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="auth-manager.js"></script>
+  
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-dark: #1D4ED8;
+      --secondary: #7C3AED;
+      --accent: #F59E0B;
+      --success: #10B981;
+      --white: #FFFFFF;
+      --light-grey: #F8FAFC;
+      --bg-gradient-1: #EFF6FF;
+      --text-dark: #0F172A;
+      --text-muted: #475569;
+      --alert-red: #EF4444;
+      --border: #E2E8F0;
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", "Tahoma", "Arial", sans-serif;
+      background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #7C3AED 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .signup-container {
+      width: 100%;
+      max-width: 500px;
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .signup-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--white);
+    }
+
+    .signup-header-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+
+    .signup-header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .signup-header p {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .signup-body {
+      padding: 2.5rem;
+    }
+
+    .progress-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .progress-step {
+      flex: 1;
+      height: 4px;
+      background: var(--light-grey);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    .progress-step.active {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      animation: fadeIn 0.6s ease-out forwards;
+      opacity: 0;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .form-group:nth-child(4) { animation-delay: 0.4s; }
+    .form-group:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-dark);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.3s;
+      background: var(--light-grey);
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+      background: var(--white);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    .password-toggle:hover {
+      color: var(--primary);
+    }
+
+    .strength-meter {
+      display: flex;
+      gap: 0.3rem;
+      margin-top: 0.5rem;
+    }
+
+    .strength-bar {
+      flex: 1;
+      height: 4px;
+      background: var(--light-grey);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    .strength-bar.weak { background: var(--alert-red); }
+    .strength-bar.medium { background: var(--accent); }
+    .strength-bar.strong { background: var(--success); }
+
+    .strength-text {
+      font-size: 0.8rem;
+      margin-top: 0.3rem;
+      font-weight: 600;
+    }
+
+    .strength-text.weak { color: var(--alert-red); }
+    .strength-text.medium { color: var(--accent); }
+    .strength-text.strong { color: var(--success); }
+
+    .error-message {
+      color: var(--alert-red);
+      font-size: 0.85rem;
+      margin-top: 0.4rem;
+      display: none;
+      animation: shake 0.3s ease-in-out;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .checkbox-input {
+      width: 20px;
+      height: 20px;
+      margin-top: 0.2rem;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+
+    .checkbox-label {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .checkbox-label a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .checkbox-label a:hover {
+      text-decoration: underline;
+    }
+
+    .form-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      padding: 1rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--light-grey);
+      color: var(--text-dark);
+      border: 2px solid var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--border);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-loading {
+      position: relative;
+    }
+
+    .btn-loading::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: var(--text-muted);
+    }
+
+    .login-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .login-link a:hover {
+      color: var(--secondary);
+      text-decoration: underline;
+    }
+
+    .success-message {
+      background: rgba(16, 185, 129, 0.1);
+      border: 2px solid var(--success);
+      color: var(--success);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      display: none;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .success-message.show {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .info-box {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(124, 58, 237, 0.05));
+      border-left: 4px solid var(--primary);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .info-box i {
+      color: var(--primary);
+      margin-right: 0.5rem;
+    }
+
+    @media (max-width: 600px) {
+      .signup-container {
+        border-radius: 0;
+      }
+
+      .signup-header {
+        padding: 2rem 1.5rem;
+      }
+
+      .signup-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .signup-body {
+        padding: 1.5rem;
+      }
+
+      .form-input {
+        padding: 0.8rem 1rem;
+        font-size: 16px;
+      }
+
+      body {
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="signup-container">
+    <!-- Header -->
+    <div class="signup-header">
+      <div class="signup-header-icon">
+        <i class="fas fa-user-plus"></i>
+      </div>
+      <h1>انضم إلينا</h1>
+      <p>أنشئ حسابك الآن وابدأ رحلة التعلم 🚀</p>
+    </div>
+
+    <!-- Body -->
+    <div class="signup-body">
+      <!-- Progress Bar -->
+      <div class="progress-bar">
+        <div class="progress-step active" id="step1"></div>
+        <div class="progress-step" id="step2"></div>
+        <div class="progress-step" id="step3"></div>
+      </div>
+
+      <div class="success-message" id="successMessage">
+        <i class="fas fa-check-circle"></i>
+        <span id="successText"></span>
+      </div>
+
+      <!-- Signup Form -->
+      <form id="signupForm" onsubmit="handleSignup(event)">
+        <!-- Full Name -->
+        <div class="form-group">
+          <label class="form-label" for="fullName">
+            <i class="fas fa-user"></i> الاسم الكامل
+          </label>
+          <input 
+            type="text" 
+            id="fullName" 
+            class="form-input" 
+            placeholder="أحمد محمد علي"
+            required
+          >
+          <div class="error-message" id="nameError"></div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="email">
+            <i class="fas fa-envelope"></i> البريد الإلكتروني
+          </label>
+          <input 
+            type="email" 
+            id="email" 
+            class="form-input" 
+            placeholder="example@email.com"
+            required
+          >
+          <div class="error-message" id="emailError"></div>
+        </div>
+
+        <!-- Phone -->
+        <div class="form-group">
+          <label class="form-label" for="phone">
+            <i class="fas fa-phone"></i> رقم الهاتف (اختياري)
+          </label>
+          <input 
+            type="tel" 
+            id="phone" 
+            class="form-input" 
+            placeholder="+966 50 0000000"
+          >
+          <div class="error-message" id="phoneError"></div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label" for="password">
+            <i class="fas fa-lock"></i> كلمة المرور
+          </label>
+          <div class="password-wrapper">
+            <input 
+              type="password" 
+              id="password" 
+              class="form-input" 
+              placeholder="أدخل كلمة مرور قوية"
+              required
+              oninput="checkPasswordStrength()"
+            >
+            <button type="button" class="password-toggle" onclick="togglePassword('password')">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="strength-meter" id="strengthMeter">
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+          </div>
+          <div class="strength-text" id="strengthText">كلمة مرور ضعيفة</div>
+          <div class="error-message" id="passwordError"></div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label class="form-label" for="confirmPassword">
+            <i class="fas fa-lock-open"></i> تأكيد كلمة المرور
+          </label>
+          <div class="password-wrapper">
+            <input 
+              type="password" 
+              id="confirmPassword" 
+              class="form-input" 
+              placeholder="أعد إدخال كلمة المرور"
+              required
+            >
+            <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="error-message" id="confirmError"></div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+          <i class="fas fa-info-circle"></i>
+          <strong>نصيحة:</strong> استخدم كلمة مرور قوية تحتوي على أحرف كبيرة وصغيرة وأرقام
+        </div>
+
+        <!-- Agreements -->
+        <div class="checkbox-group">
+          <input type="checkbox" id="terms" class="checkbox-input" required>
+          <label for="terms" class="checkbox-label">
+            أوافق على <a href="#">شروط الخدمة</a> و<a href="#">سياسة الخصوصية</a>
+          </label>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="newsletter" class="checkbox-input">
+          <label for="newsletter" class="checkbox-label">
+            أرغب في تلقي تحديثات ودروس جديدة عبر البريد الإلكتروني
+          </label>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="signupBtn">
+            <i class="fas fa-user-check"></i> إنشاء الحساب
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="window.location.href='login.html'">
+            <i class="fas fa-sign-in-alt"></i> لديّ حساب بالفعل
+          </button>
+        </div>
+      </form>
+
+      <!-- Login Link -->
+      <div class="login-link">
+        لديك حساب بالفعل؟ <a href="login.html">سجل الدخول من هنا</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // Supabase Configuration
+    // ============================================
+    const supabaseUrl = 'https://vpwpafsqmnuogsoivfid.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwd3BhZnNxbW51b2dzb2l2ZmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MjQ0ODIsImV4cCI6MjA5MTUwMDQ4Mn0.RnnPZ4hc_0S7Nhx-Y9HE0dVW-Hs-wP56ISeF9BUeMtA';
+
+    let supabase = null;
+    let isLoading = false;
+
+    // Initialize Supabase
+    try {
+      supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+      console.log('✅ Supabase initialized');
+    } catch (error) {
+      console.error('❌ Supabase error:', error);
+      showError('emailError', 'فشل الاتصال بالخادم');
+    }
+
+    // Toggle Password Visibility
+    function togglePassword(fieldId) {
+      const field = document.getElementById(fieldId);
+      const icon = event.target.closest('button').querySelector('i');
+      
+      if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        field.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    // Check Password Strength
+    function checkPasswordStrength() {
+      const password = document.getElementById('password').value;
+      const strengthMeter = document.getElementById('strengthMeter');
+      const strengthText = document.getElementById('strengthText');
+      
+      let strength = 0;
+      
+      // Length check
+      if (password.length >= 6) strength++;
+      if (password.length >= 8) strength++;
+      
+      // Complexity check
+      if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+      if (/[0-9]/.test(password)) strength++;
+      if (/[^a-zA-Z0-9]/.test(password)) strength++;
+      
+      // Update bars
+      const bars = strengthMeter.querySelectorAll('.strength-bar');
+      bars.forEach((bar, index) => {
+        bar.classList.remove('weak', 'medium', 'strong');
+        if (index < strength) {
+          if (strength <= 2) bar.classList.add('weak');
+          else if (strength <= 3) bar.classList.add('medium');
+          else bar.classList.add('strong');
+        }
+      });
+      
+      // Update text
+      strengthText.classList.remove('weak', 'medium', 'strong');
+      if (strength <= 2) {
+        strengthText.textContent = 'كلمة مرور ضعيفة';
+        strengthText.classList.add('weak');
+      } else if (strength <= 3) {
+        strengthText.textContent = 'كلمة مرور متوسطة';
+        strengthText.classList.add('medium');
+      } else {
+        strengthText.textContent = 'كلمة مرور قوية';
+        strengthText.classList.add('strong');
+      }
+    }
+
+    // Show Error Message
+    function showError(elementId, message) {
+      const element = document.getElementById(elementId);
+      element.textContent = message;
+      element.classList.add('show');
+      
+      setTimeout(() => {
+        element.classList.remove('show');
+      }, 5000);
+    }
+
+    // Show Success Message
+    function showSuccess(message) {
+      const element = document.getElementById('successMessage');
+      document.getElementById('successText').textContent = message;
+      element.classList.add('show');
+      
+      setTimeout(() => {
+        element.classList.remove('show');
+      }, 3000);
+    }
+
+    // Validate Email
+    function isValidEmail(email) {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return regex.test(email);
+    }
+
+    // Validate Phone
+    function isValidPhone(phone) {
+      if (!phone) return true; // Optional field
+      const regex = /^(\+\d{1,3}[- ]?)?\d{9,10}$/;
+      return regex.test(phone.replace(/\s/g, ''));
+    }
+
+    // Handle Signup
+    async function handleSignup(e) {
+      e.preventDefault();
+      
+      if (isLoading) return;
+
+      const fullName = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const terms = document.getElementById('terms').checked;
+      const signupBtn = document.getElementById('signupBtn');
+
+      // Clear previous errors
+      document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+
+      // Validation
+      if (!fullName) {
+        showError('nameError', 'الرجاء إدخال اسمك الكامل');
+        return;
+      }
+
+      if (fullName.length < 3) {
+        showError('nameError', 'الاسم يجب أن يكون 3 أحرف على الأقل');
+        return;
+      }
+
+      if (!email) {
+        showError('emailError', 'الرجاء إدخال البريد الإلكتروني');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showError('emailError', 'البريد الإلكتروني غير صحيح');
+        return;
+      }
+
+      if (phone && !isValidPhone(phone)) {
+        showError('phoneError', 'رقم الهاتف غير صحيح');
+        return;
+      }
+
+      if (!password || password.length < 6) {
+        showError('passwordError', 'كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showError('confirmError', 'كلمات المرور غير متطابقة');
+        return;
+      }
+
+      if (!terms) {
+        showError('emailError', 'يجب قبول شروط الخدمة');
+        return;
+      }
+
+      isLoading = true;
+      signupBtn.disabled = true;
+      signupBtn.classList.add('btn-loading');
+
+      try {
+        if (!supabase) {
+          throw new Error('لم يتم الاتصال بالخادم');
+        }
+
+        // Create user
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+              phone: phone,
+              newsletter: document.getElementById('newsletter').checked
+            }
+          }
+        });
+
+        if (error) {
+          if (error.message.includes('already registered')) {
+            showError('emailError', 'هذا البريد الإلكتروني مسجل بالفعل');
+          } else {
+            showError('emailError', error.message || 'حدث خطأ في إنشاء الحساب');
+          }
+          console.error('Signup error:', error);
+        } else {
+          showSuccess('تم إنشاء الحساب بنجاح! ✅');
+          
+          // Store user data
+          localStorage.setItem('userFullName', fullName);
+          localStorage.setItem('userEmail', email);
+          localStorage.setItem('userPhone', phone);
+          localStorage.setItem('isAuthenticated', 'true');
+          
+          // Redirect after delay
+          setTimeout(() => {
+            window.location.href = 'learning-lab.html';
+          }, 1500);
+        }
+      } catch (error) {
+        showError('emailError', 'خطأ: ' + error.message);
+        console.error('Error:', error);
+      } finally {
+        isLoading = false;
+        signupBtn.disabled = false;
+        signupBtn.classList.remove('btn-loading');
+      }
+    }
+
+    // Check if user is already logged in
+    async function checkUser() {
+      try {
+        if (!supabase) return;
+        
+        const { data } = await supabase.auth.getUser();
+        
+        if (data.user) {
+          window.location.href = 'learning-lab.html';
+        }
+      } catch (error) {
+        console.error('Check user error:', error);
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      checkUser();
+      console.log('✅ Signup page loaded');
+    });
+  </script>
+
+</body>
+</html>

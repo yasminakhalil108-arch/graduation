@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="supabase.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>اختبار AI Assistant API</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+      direction: rtl;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      color: #667eea;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    .test-section {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #667eea;
+    }
+
+    .test-section h2 {
+      font-size: 1.2rem;
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    .query-input {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .query-input input {
+      flex: 1;
+      padding: 0.8rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .query-input button {
+      padding: 0.8rem 1.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .query-input button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .response-box {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      margin-top: 1rem;
+    }
+
+    .response-box h3 {
+      color: #667eea;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .response-box p {
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    .stat-card .number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .stat-card .label {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
+
+    .categories-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .category-card {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+
+    .category-card h3 {
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+
+    .category-card ul {
+      list-style: none;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .category-card li {
+      padding: 0.3rem 0;
+    }
+
+    .console-output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .success {
+      color: #4ec9b0;
+    }
+
+    .info {
+      color: #9cdcfe;
+    }
+
+    .warning {
+      color: #ce9178;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      background: #4ec9b0;
+      color: white;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    button.test-btn {
+      padding: 0.5rem 1rem;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin: 0.5rem 0;
+    }
+
+    button.test-btn:hover {
+      background: #764ba2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 اختبار AI Assistant API</h1>
+    <p class="subtitle">منصة الاختبار الكاملة لـ API مساعد الذكاء الاصطناعي</p>
+
+    <!-- Test 1: Query Processing -->
+    <div class="test-section">
+      <h2>🔍 اختبار معالجة الأسئلة</h2>
+      <div class="query-input">
+        <input type="text" id="queryInput" placeholder="أدخل سؤالك هنا..." value="كيف أتعلم الحروف">
+        <button onclick="testQuery()">بحث</button>
+      </div>
+      <div class="response-box" id="queryResponse" style="display: none;">
+        <h3>الإجابة:</h3>
+        <p id="responseText"></p>
+      </div>
+    </div>
+
+    <!-- Test 2: Available Questions -->
+    <div class="test-section">
+      <h2>📚 الفئات والأسئلة المتاحة</h2>
+      <div class="categories-list" id="categoriesContainer"></div>
+    </div>
+
+    <!-- Test 3: Statistics -->
+    <div class="test-section">
+      <h2>📊 الإحصائيات</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="number" id="totalCategories">0</div>
+          <div class="label">الفئات المتاحة</div>
+        </div>
+        <div class="stat-card">
+          <div class="number" id="totalQuestions">0</div>
+          <div class="label">الأسئلة الكلية</div>
+        </div>
+        <div class="stat-card">
+          <div class="number" id="storedEvents">0</div>
+          <div class="label">الأحداث المسجلة</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test 4: Console Output -->
+    <div class="test-section">
+      <h2>💻 سجل الاختبار</h2>
+      <button class="test-btn" onclick="runFullTests()">🚀 تشغيل جميع الاختبارات</button>
+      <button class="test-btn" onclick="clearConsole()">🗑️ مسح السجل</button>
+      <div class="console-output" id="consoleOutput">جاهز للبدء...</div>
+      <div id="status"></div>
+    </div>
+  </div>
+
+  <script src="ai-assistant-api.js"></script>
+  <script>
+    const consoleOutput = document.getElementById('consoleOutput');
+
+    function log(type, message) {
+      const timestamp = new Date().toLocaleTimeString('ar');
+      let color = '';
+      
+      if (type === 'success') {
+        color = 'success';
+      } else if (type === 'info') {
+        color = 'info';
+      } else if (type === 'warning') {
+        color = 'warning';
+      }
+
+      const line = `<span class="${color}">[${timestamp}] ${message}</span>\n`;
+      consoleOutput.innerHTML += line;
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+
+    function clearConsole() {
+      consoleOutput.innerHTML = '';
+    }
+
+    function testQuery() {
+      const input = document.getElementById('queryInput').value;
+      if (!input.trim()) {
+        alert('الرجاء إدخال سؤال!');
+        return;
+      }
+
+      const response = AIAssistant.processQuery(input);
+      const responseBox = document.getElementById('queryResponse');
+      const responseText = document.getElementById('responseText');
+
+      responseText.textContent = response;
+      responseBox.style.display = 'block';
+
+      log('success', `✓ السؤال: "${input}"`);
+      log('success', `✓ الإجابة: "${response}"`);
+    }
+
+    function loadCategories() {
+      const container = document.getElementById('categoriesContainer');
+      container.innerHTML = '';
+
+      Object.keys(AIAssistant.responseDatabase).forEach(category => {
+        const questions = AIAssistant.responseDatabase[category];
+        const questionsList = Object.keys(questions).join('\n• ');
+
+        const card = document.createElement('div');
+        card.className = 'category-card';
+        card.innerHTML = `
+          <h3>📂 ${category}</h3>
+          <ul>
+            <li>• ${questionsList}</li>
+          </ul>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updateStats() {
+      let totalQuestions = 0;
+      Object.keys(AIAssistant.responseDatabase).forEach(category => {
+        totalQuestions += Object.keys(AIAssistant.responseDatabase[category]).length;
+      });
+
+      document.getElementById('totalCategories').textContent = Object.keys(AIAssistant.responseDatabase).length;
+      document.getElementById('totalQuestions').textContent = totalQuestions;
+
+      const events = JSON.parse(localStorage.getItem('chatEvents') || '[]');
+      document.getElementById('storedEvents').textContent = events.length;
+    }
+
+    async function runFullTests() {
+      clearConsole();
+      log('info', '🚀 بدء الاختبارات...\n');
+
+      // Test 1: Session
+      log('info', '📌 اختبار 1: إدارة الجلسات');
+      const session = AIAssistant.initSession();
+      log('success', `✓ معرف الجلسة: ${session}`);
+
+      // Test 2: Queries
+      log('info', '\n📌 اختبار 2: معالجة الأسئلة');
+      const queries = ['مرحبا', 'كيف أتعلم الحروف', 'هل هناك اختبارات'];
+      queries.forEach(q => {
+        const r = AIAssistant.processQuery(q);
+        log('success', `✓ Q: ${q} → ${r.substring(0, 50)}...`);
+      });
+
+      // Test 3: Save Message
+      log('info', '\n📌 اختبار 3: حفظ الرسائل');
+      await AIAssistant.saveMessage('اختبار', 'إجابة اختبار');
+      log('success', '✓ تم حفظ الرسالة');
+
+      // Test 4: Events
+      log('info', '\n📌 اختبار 4: تسجيل الأحداث');
+      AIAssistant.logEvent('test_event', { data: 'اختبار' });
+      log('success', '✓ تم تسجيل الحدث');
+
+      // Test 5: Stats
+      log('info', '\n📌 اختبار 5: الإحصائيات');
+      const stats = await AIAssistant.getUserStats();
+      log('success', `✓ الإحصائيات محدثة: ${JSON.stringify(stats).substring(0, 50)}...`);
+
+      log('success', '\n✅ اكتملت جميع الاختبارات بنجاح!');
+      document.getElementById('status').innerHTML = '<div class="status-badge">✓ جميع الاختبارات نجحت</div>';
+    }
+
+    // Initialize
+    window.addEventListener('load', () => {
+      log('info', '🔧 تم تحميل API بنجاح');
+      loadCategories();
+      updateStats();
+    });
+
+    document.getElementById('queryInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') testQuery();
+    });
+  </script>
+</body>
+</html>

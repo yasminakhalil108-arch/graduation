@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="supabase.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign It - أرقام الطوارئ والاستغاثة 🚨</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="auth-manager.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .emergency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .emergency-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .emergency-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .emergency-card.ambulance {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .emergency-card.police {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .emergency-card.fire {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: #333;
+        }
+
+        .emergency-card.mental {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+
+        .emergency-card.tourism {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+        }
+
+        .emergency-card.traffic {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
+        }
+
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-description {
+            font-size: 0.95em;
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+
+        .number-display {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            border: 2px dashed rgba(255, 255, 255, 0.4);
+            letter-spacing: 3px;
+        }
+
+        .call-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid white;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .call-btn:hover {
+            background: white;
+            color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .info-section {
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 15px;
+            border-right: 5px solid #667eea;
+        }
+
+        .info-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .info-section p, .info-section li {
+            color: #2d3748;
+            margin: 10px 0;
+            line-height: 1.8;
+            font-size: 0.95em;
+        }
+
+        .info-section ul {
+            margin-right: 20px;
+        }
+
+        .warning-box {
+            background: #fff5f5;
+            border-right: 5px solid #f56565;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .warning-box h3 {
+            color: #e53e3e;
+            margin-bottom: 10px;
+        }
+
+        .warning-box p {
+            color: #c53030;
+        }
+
+        .quick-access {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .quick-access h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-btn {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        footer {
+            background: #f7fafc;
+            padding: 20px;
+            text-align: center;
+            color: #2d3748;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: #764ba2;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .emergency-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .number-display {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚨 أرقام الطوارئ والاستغاثة</h1>
+            <p>ارقام هامة في مصر - احفظها لحالات الطوارئ</p>
+        </header>
+
+        <div class="content">
+            <a href="index.html" class="back-btn">← العودة للرئيسية</a>
+
+            <!-- Quick Access -->
+            <div class="quick-access">
+                <h3>⚡ وصول سريع</h3>
+                <div class="quick-buttons">
+                    <button class="quick-btn" onclick="callNumber('123')">🚑 استدعاء الإسعاف</button>
+                    <button class="quick-btn" onclick="callNumber('122')">🚓 استدعاء الشرطة</button>
+                    <button class="quick-btn" onclick="callNumber('180')">🔥 استدعاء المطافئ</button>
+                    <button class="quick-btn" onclick="callNumber('105')">📞 وزارة الصحة</button>
+                </div>
+            </div>
+
+            <!-- Emergency Numbers Grid -->
+            <div class="emergency-grid">
+                <!-- الإسعاف -->
+                <div class="emergency-card ambulance">
+                    <div class="card-icon">🚑</div>
+                    <div class="card-title">الإسعاف</div>
+                    <div class="card-description">للحالات الطبية الطارئة والحوادث</div>
+                    <div class="number-display">123</div>
+                    <button class="call-btn" onclick="callNumber('123')">☎️ اتصل الآن</button>
+                </div>
+
+                <!-- الشرطة -->
+                <div class="emergency-card police">
+                    <div class="card-icon">🚓</div>
+                    <div class="card-title">الشرطة</div>
+                    <div class="card-description">للبلاغات الأمنية والحالات المستعجلة</div>
+                    <div class="number-display">122</div>
+                    <button class="call-btn" onclick="callNumber('122')">☎️ اتصل الآن</button>
+                </div>
+
+                <!-- المطافئ -->
+                <div class="emergency-card fire">
+                    <div class="card-icon">🔥</div>
+                    <div class="card-title">المطافئ (الحماية المدنية)</div>
+                    <div class="card-description">لحالات الحريق والإنقاذ</div>
+                    <div class="number-display">180</div>
+                    <button class="call-btn" onclick="callNumber('180')">☎️ اتصل الآن</button>
+                </div>
+
+                <!-- النجدة العامة -->
+                <div class="emergency-card police">
+                    <div class="card-icon">🚨</div>
+                    <div class="card-title">النجدة العامة</div>
+                    <div class="card-description">للبلاغات العامة والطوارئ</div>
+                    <div class="number-display">122</div>
+                    <button class="call-btn" onclick="callNumber('122')">☎️ اتصل الآن</button>
+                </div>
+
+                <!-- شرطة السياحة -->
+                <div class="emergency-card tourism">
+                    <div class="card-icon">🎫</div>
+                    <div class="card-title">شرطة السياحة</div>
+                    <div class="card-description">للمشاكل المتعلقة بالسياحة والسائحين</div>
+                    <div class="number-display">126</div>
+                    <button class="call-btn" onclick="callNumber('126')">☎️ اتصل الآن</button>
+                </div>
+
+                <!-- المرور -->
+                <div class="emergency-card traffic">
+                    <div class="card-icon">🚗</div>
+                    <div class="card-title">المرور</div>
+                    <div class="card-description">لحوادث الطرق والمخالفات المرورية</div>
+                    <div class="number-display">128</div>
+                    <button class="call-btn" onclick="callNumber('128')">☎️ اتصل الآن</button>
+                </div>
+
+                <!-- وزارة الصحة -->
+                <div class="emergency-card ambulance">
+                    <div class="card-icon">👩‍⚕️</div>
+                    <div class="card-title">خط وزارة الصحة</div>
+                    <div class="card-description">الاستشارات الطبية والمعلومات الصحية</div>
+                    <div class="number-display">105</div>
+                    <button class="call-btn" onclick="callNumber('105')">☎️ اتصل الآن</button>
+                </div>
+
+                <!-- الدعم النفسي -->
+                <div class="emergency-card mental">
+                    <div class="card-icon">🧠</div>
+                    <div class="card-title">الدعم النفسي</div>
+                    <div class="card-description">الأمانة العامة للصحة النفسية والدعم النفسي</div>
+                    <div class="number-display">16328</div>
+                    <button class="call-btn" onclick="callNumber('16328')">☎️ اتصل الآن</button>
+                </div>
+            </div>
+
+            <!-- معلومات إضافية -->
+            <div class="info-section">
+                <h2>📌 معلومات هامة</h2>
+                <p><strong>🔔 عند الاتصال بأي جهة طوارئ، تأكد من تقديم:</strong></p>
+                <ul>
+                    <li>✅ موقعك الدقيق أو العنوان</li>
+                    <li>✅ وصف الحالة باختصار</li>
+                    <li>✅ رقم هاتفك للتواصل</li>
+                    <li>✅ أي معلومات إضافية مهمة</li>
+                </ul>
+
+                <p style="margin-top: 20px;"><strong>💡 نصائح الأمان:</strong></p>
+                <ul>
+                    <li>✅ احفظ أرقام الطوارئ في هاتفك</li>
+                    <li>✅ علّم أطفالك أرقام الطوارئ الهامة</li>
+                    <li>✅ في حالة الخطر الشديد، لا تتردد في الاتصال</li>
+                    <li>✅ البقاء هادئاً يساعد في التعامل مع الحالة بشكل أفضل</li>
+                </ul>
+
+                <div class="warning-box">
+                    <h3>⚠️ تحذير مهم</h3>
+                    <p>في حالة الطوارئ الحقيقية، لا تتردد في الاتصال فوراً. الاتصالات الكاذبة قد تعطل خدمات الطوارئ عن من هم بحاجة فعلية للمساعدة.</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>🛡️ جميع أرقام الطوارئ متاحة 24/7</p>
+            <p style="opacity: 0.7;">آخر تحديث: أبريل 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        function callNumber(number) {
+            // محاولة الاتصال
+            const phoneLink = `tel:${number}`;
+            
+            // محاولة استخدام tel protocol
+            if (navigator.userAgentData && navigator.userAgentData.mobile) {
+                // على الهاتف الذكي
+                window.location.href = phoneLink;
+            } else {
+                // على الويب
+                alert(`📞 رقم الاتصال: ${number}\n\nإذا كنت على جهاز متصل بالهاتف، سيتم فتح المكالمة تلقائياً.`);
+                // محاولة الاتصال حتى لو لم يكن جهاز هاتف
+                window.location.href = phoneLink;
+            }
+        }
+
+        console.log("✅ صفحة أرقام الطوارئ جاهزة");
+    </script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="معمل التعلم الذكي - منصة تعليمية تفاعلية">
+    <meta name="theme-color" content="#6366F1">
+    <title>معمل التعلم - Learning Lab</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="learning-lab-style.css">
+</head>
+<body class="learning-body">
+    <!-- Header/Navbar -->
+    <header class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <i class="fas fa-home"></i>
+                <span>الصفحة الرئيسية</span>
+            </a>
+            
+            <div class="progress-overview">
+                <span class="progress-label" id="overall-progress-text">
+                    التقدم الإجمالي: <strong>0%</strong>
+                </span>
+                <div class="mini-progress-bar">
+                    <div id="mini-progress-fill" class="mini-progress-fill"></div>
+                </div>
+            </div>
+
+            <button class="navbar-menu-toggle" id="menuToggle" aria-label="القائمة">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Level Selection View (فارغة تبدأ من الصفر) -->
+        <section id="level-selection" class="section active">
+            <div class="section-header">
+                <h1 class="section-title">
+                    <i class="fas fa-graduation-cap"></i>
+                    معمل التعلم الذكي
+                </h1>
+                <p class="section-subtitle">اختر المستوى المناسب لك وابدأ رحلتك.</p>
+            </div>
+            <div class="levels-grid">
+                <!-- Level 1 Card -->
+                <div class="level-card" data-level="1">
+                    <div class="level-header">
+                        <h2 class="level-title">المستوى الأول</h2>
+                        <span class="level-badge">
+                            <i class="fas fa-font"></i>
+                            الحروف
+                        </span>
+                    </div>
+                    <!-- محتوى المستوى فارغ -->
+                </div>
+                <!-- Level 2 Card -->
+                <div class="level-card" data-level="2">
+                    <div class="level-header">
+                        <h2 class="level-title">المستوى الثاني</h2>
+                        <span class="level-badge">
+                            <i class="fas fa-calculator"></i>
+                            الأرقام
+                        </span>
+                    </div>
+                    <!-- محتوى المستوى فارغ -->
+                </div>
+                <!-- Level 3 Card -->
+                <div class="level-card" data-level="3">
+                    <div class="level-header">
+                        <h2 class="level-title">المستوى الثالث</h2>
+                        <span class="level-badge">
+                            <i class="fas fa-pen-fancy"></i>
+                            كلمات مهمة
+                        </span>
+                    </div>
+                    <!-- محتوى المستوى فارغ -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Lesson View -->
+        <section id="lesson-view" class="section hidden">
+            <div class="lesson-header">
+                <button class="btn btn-back" onclick="backToLevels()" aria-label="رجوع">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>رجوع للمستويات</span>
+                </button>
+
+                <div class="lesson-info">
+                    <h2 id="current-level-title" class="lesson-title">المستوى 1</h2>
+                    <span id="lesson-counter" class="lesson-counter">الدرس 1 من 4</span>
+                </div>
+            </div>
+
+            <div class="lesson-progress">
+                <div class="progress-bar-large">
+                    <div id="lesson-progress-fill" class="progress-fill"></div>
+                </div>
+                <span id="lesson-progress-text" class="progress-text">25%</span>
+            </div>
+
+            <!-- Content Area -->
+            <div id="content-area" class="content-box">
+                <div id="lesson-content" class="lesson-content" role="main"></div>
+            </div>
+
+            <!-- Lesson Navigation -->
+            <div class="lesson-nav">
+                <button id="prev-btn" class="btn btn-secondary" onclick="previousLesson()" aria-label="درس سابق">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>درس سابق</span>
+                </button>
+                <button id="next-btn" class="btn btn-primary" onclick="nextLesson()" aria-label="درس التالي">
+                    <span>درس التالي</span>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Quiz View -->
+        <section id="quiz-view" class="section hidden">
+            <div class="quiz-header">
+                <h2 id="quiz-title" class="quiz-title">اختبار الدرس</h2>
+                <p id="quiz-subtitle" class="quiz-subtitle">أجب على الأسئلة لاختبار فهمك</p>
+            </div>
+
+            <div id="quiz-questions" class="quiz-container" role="form"></div>
+
+            <div class="quiz-actions">
+                <button class="btn btn-secondary" onclick="returnToLesson()">
+                    <i class="fas fa-times"></i>
+                    <span>رجوع للدرس</span>
+                </button>
+                <button class="btn btn-primary" onclick="submitQuiz()">
+                    <i class="fas fa-check"></i>
+                    <span>إرسال الإجابات</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Results View -->
+        <section id="results-view" class="section hidden">
+            <div class="results-container">
+                <div class="results-header">
+                    <h2 id="results-title" class="results-title">النتائج</h2>
+                    <div id="score-circle" class="score-circle">
+                        <span class="score-percentage" id="score-percentage">0%</span>
+                    </div>
+                </div>
+
+                <div class="results-content">
+                    <p id="results-message" class="results-message"></p>
+                    <div id="results-details" class="results-details" role="complementary"></div>
+                </div>
+
+                <div class="results-actions">
+                    <button class="btn btn-secondary" onclick="retakeQuiz()">
+                        <i class="fas fa-redo"></i>
+                        <span>أعد المحاولة</span>
+                    </button>
+                    <button id="next-lesson-btn" class="btn btn-primary" onclick="proceedToNextLessonOrLevel()">
+                        <span>التالي</span>
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Level Quiz View -->
+        <section id="level-quiz-view" class="section hidden">
+            <div class="quiz-header">
+                <h2 id="level-quiz-title" class="quiz-title">اختبار المستوى النهائي</h2>
+                <p id="level-quiz-subtitle" class="quiz-subtitle">
+                    لقد انتهيت من جميع دروس المستوى! الآن آن الأوان لاختبار معلوماتك
+                </p>
+            </div>
+
+            <div id="level-quiz-questions" class="quiz-container" role="form"></div>
+
+            <div class="quiz-actions">
+                <button class="btn btn-secondary" onclick="skipLevelQuiz()">
+                    <i class="fas fa-skip-forward"></i>
+                    <span>تخطي الاختبار</span>
+                </button>
+                <button class="btn btn-primary" onclick="submitLevelQuiz()">
+                    <i class="fas fa-check"></i>
+                    <span>إرسال الإجابات</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Level Complete View -->
+        <section id="level-complete-view" class="section hidden">
+            <div class="complete-container">
+                <div class="celebration">
+                    <div class="celebration-emoji">🎉</div>
+                    <h1 class="celebration-title">مبروك!</h1>
+                    <p id="level-complete-message" class="celebration-message">
+                        لقد أكملت المستوى الأول بنجاح!
+                    </p>
+                </div>
+
+                <div class="achievement">
+                    <div class="achievement-box">
+                        <h3 class="achievement-title">
+                            <i class="fas fa-star"></i>
+                            إحصائيات المستوى
+                        </h3>
+                        <div class="achievement-stats">
+                            <p>
+                                <i class="fas fa-chart-pie"></i>
+                                <span>متوسط النسبة: <strong id="level-avg-score">0</strong>%</span>
+                            </p>
+                            <p>
+                                <i class="fas fa-check-circle"></i>
+                                <span>الدروس المكتملة: <strong id="level-lessons-completed">4</strong>/4</span>
+                            </p>
+                            <p>
+                                <i class="fas fa-hourglass-end"></i>
+                                <span>الوقت المستغرق: <strong id="level-time-spent">0</strong> دقيقة</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="completion-actions">
+                    <button class="btn btn-secondary" onclick="backToLevels()">
+                        <i class="fas fa-arrow-right"></i>
+                        <span>العودة للمستويات</span>
+                    </button>
+                    <button id="unlock-next-level" class="btn btn-primary" onclick="unlockNextLevel()">
+                        <span>انتقل للمستوى التالي</span>
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Achievement Toast Notification -->
+    <div id="achievement-toast" class="achievement-toast hidden" role="alert" aria-live="polite">
+        <i class="fas fa-trophy"></i>
+        <span id="toast-message">إنجاز جديد!</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="learning-lab-script.js"></script>
+    
+    <!-- Floating Chat Widget -->
+    <link rel="stylesheet" href="../chat-widget-style.css">
+    <script src="../chat-widget-script.js"></script>
+</body>
+</html>

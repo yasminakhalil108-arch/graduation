@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="supabase.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign It - مساعد لغة الإشارة الذكي 👋</title>
+    <link rel="stylesheet" href="sign-assistant-style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- رأس الصفحة -->
+        <header>
+            <div class="header-content">
+                <h1>👋 Sign It</h1>
+                <p>مساعدك الذكي لفهم لغة الإشارة</p>
+            </div>
+            
+            <!-- وضع التشغيل -->
+            <div class="mode-switcher">
+                <button class="mode-btn active" id="signToTextBtn" onclick="switchMode('sign-to-text')">
+                    🤚 من إشارة إلى نص
+                </button>
+                <button class="mode-btn" id="textToSpeechBtn" onclick="switchMode('text-to-speech')">
+                    ⌨️ من نص إلى صوت
+                </button>
+            </div>
+        </header>
+
+        <!-- المحتوى الرئيسي -->
+        <main id="mainContent">
+            <!-- وضع Sign to Text -->
+            <div id="signToTextMode" class="mode-content active">
+                <section class="camera-section">
+                    <div class="camera-container">
+                        <video id="video" autoplay playsinline></video>
+                        <canvas id="canvas"></canvas>
+                        <div class="status" id="status">👁️ جاري البحث عن الكاميرا...</div>
+                    </div>
+                </section>
+
+                <section class="info-section">
+                    <!-- عرض الإشارة المكتشفة -->
+                    <div class="detected-box">
+                        <h3>🎯 الإشارة المكتشفة</h3>
+                        <div class="gesture-display" id="gestureDisplay">
+                            <span class="gesture-text">--</span>
+                            <span class="confidence" id="confidence">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- صندوق التصحيح المحسّن -->
+                    <div class="suggestion-popup" id="suggestionPopup" style="display: none;">
+                        <div class="popup-content">
+                            <p class="popup-title">💡 هل تقصد:</p>
+                            <div class="suggestions" id="suggestions"></div>
+                            <button class="close-popup" onclick="closeSuggestion()">✕</button>
+                        </div>
+                    </div>
+
+                    <!-- صندوق الرسائل (Chat Style) -->
+                    <div class="messages-box">
+                        <h3>💬 السجل</h3>
+                        <div class="messages" id="messages">
+                            <div class="message bot">أهلًا! ابدأ بعمل إشارات أمام الكاميرا 👋</div>
+                        </div>
+                    </div>
+
+                    <!-- أزرار التحكم -->
+                    <div class="controls">
+                        <button id="toggleCamera" class="btn btn-primary">📷 بدء الكاميرا</button>
+                        <button id="speakBtn" class="btn btn-secondary">🔊 نطق النص</button>
+                        <button id="clearBtn" class="btn btn-danger">🗑️ مسح السجل</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- وضع Text to Speech -->
+            <div id="textToSpeechMode" class="mode-content">
+                <section class="text-input-section">
+                    <div class="text-card">
+                        <h3>🎤 أدخل النص للنطق</h3>
+                        <textarea id="textInput" class="text-input" placeholder="اكتب النص هنا..."></textarea>
+                        
+                        <div class="tts-controls">
+                            <div class="control-group">
+                                <label for="speed">السرعة:</label>
+                                <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
+                                <span id="speedValue">1x</span>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label for="pitch">التردد:</label>
+                                <input type="range" id="pitch" min="0.5" max="2" step="0.1" value="1">
+                                <span id="pitchValue">1x</span>
+                            </div>
+                        </div>
+                        
+                        <div class="tts-buttons">
+                            <button class="btn btn-primary" onclick="speakCustomText()">🔊 نطق النص</button>
+                            <button class="btn btn-secondary" onclick="stopSpeech()">⏹️ إيقاف</button>
+                        </div>
+                    </div>
+
+                    <!-- الأمثلة السريعة -->
+                    <div class="quick-examples">
+                        <h3>⚡ أمثلة سريعة</h3>
+                        <div class="examples-grid">
+                            <button class="example-btn" onclick="speakExample('مرحبا')">مرحبا</button>
+                            <button class="example-btn" onclick="speakExample('كيف حالك')">كيف حالك</button>
+                            <button class="example-btn" onclick="speakExample('شكرا لك')">شكرا لك</button>
+                            <button class="example-btn" onclick="speakExample('أنا بخير')">أنا بخير</button>
+                            <button class="example-btn" onclick="speakExample('إلى اللقاء')">إلى اللقاء</button>
+                            <button class="example-btn" onclick="speakExample('كم سعرها')">كم سعرها</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- الإرشادات -->
+        <footer>
+            <div class="instructions">
+                <h4>📚 الإشارات المدعومة:</h4>
+                <div class="gestures-grid">
+                    <div class="gesture-info">
+                        <span class="gesture-emoji">✋</span>
+                        <span>يد مفتوحة = "مرحبا"</span>
+                    </div>
+                    <div class="gesture-info">
+                        <span class="gesture-emoji">✊</span>
+                        <span>قبضة يد = "توقف"</span>
+                    </div>
+                    <div class="gesture-info">
+                        <span class="gesture-emoji">👆</span>
+                        <span>إصبع واحد = "واحد"</span>
+                    </div>
+                    <div class="gesture-info">
+                        <span class="gesture-emoji">✌️</span>
+                        <span>إصبعين = "اثنين"</span>
+                    </div>
+                    <div class="gesture-info">
+                        <span class="gesture-emoji">🙏</span>
+                        <span>يدين معاً = "شكرا"</span>
+                    </div>
+                    <div class="gesture-info">
+                        <span class="gesture-emoji">👍</span>
+                        <span>الإبهام = "أحسنت"</span>
+                    </div>
+                    <div class="gesture-info">
+                        <span class="gesture-emoji">❌</span>
+                        <span>تحريك الرأس = "لا"</span>
+                    </div>
+                    <div class="gesture-info">
+                        <span class="gesture-emoji">💙</span>
+                        <span>يدين على القلب = "حب"</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- مكتبة MediaPipe -->
+    <script async src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+    <!-- الملف الرئيسي للسكريبت -->
+    <script src="sign-assistant-script.js"></script>
+</body>
+</html>
