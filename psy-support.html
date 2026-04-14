@@ -2,20 +2,83 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 <title>Sign It - الصحة النفسية 🧠</title>
 <style>
 * {box-sizing: border-box; margin: 0; padding: 0;}
 body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333;}
-header {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);}
-header h1 {font-size: 2.5em; margin-bottom: 10px;}
-header p {font-size: 1.1em; opacity: 0.9;}
+header {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: relative;}
+header h1 {font-size: 2em; margin-bottom: 10px;}
+header p {font-size: 1em; opacity: 0.9;}
+
+/* زر القائمة للهاتف */
+.menu-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+  transition: background 0.3s;
+}
+.menu-toggle:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* القائمة الجانبية (تظهر كـ off-canvas على الموبايل) */
+.sidebar {
+  width: 280px;
+  background: white;
+  padding: 20px;
+  min-height: 100vh;
+  box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+}
+.sidebar h3 {color: #667eea; margin-bottom: 15px; font-size: 1.3em;}
+.sidebar button {
+  display: block;
+  width: 100%;
+  margin: 12px 0;
+  padding: 12px 15px;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: pointer;
+  border-radius: 10px;
+  font-size: 1em;
+  transition: all 0.3s;
+  font-weight: 600;
+  text-align: center;
+}
+.sidebar button:hover {transform: translateX(-5px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.5);}
+
+/* زر إغلاق القائمة على الموبايل */
+.close-sidebar {
+  display: none;
+  background: none;
+  border: none;
+  color: #667eea;
+  font-size: 1.8rem;
+  cursor: pointer;
+  margin-bottom: 15px;
+  text-align: left;
+  width: 100%;
+  padding: 5px;
+}
 
 .container {display: flex; max-width: 1400px; margin: 0 auto;}
-.sidebar {width: 280px; background: white; padding: 20px; min-height: 100vh; box-shadow: 2px 0 15px rgba(0,0,0,0.1);}
-.sidebar h3 {color: #667eea; margin-bottom: 15px; font-size: 1.3em;}
-.sidebar button {display: block; width: 100%; margin: 12px 0; padding: 12px 15px; border: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; cursor: pointer; border-radius: 10px; font-size: 1em; transition: all 0.3s; font-weight: 600;}
-.sidebar button:hover {transform: translateX(-5px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.5);}
 
 .content {flex: 1; padding: 30px; overflow-y: auto;}
 .card {background: white; padding: 30px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); animation: slideIn 0.4s ease;}
@@ -36,7 +99,7 @@ input:focus, select:focus {outline: none; border-color: #667eea;}
 .symptom-item.selected, .disorder-card.selected {background: #667eea; color: white; border-color: #667eea;}
 
 .checkbox {margin-right: 10px;}
-.rating-scale {display: flex; gap: 10px; margin: 15px 0; align-items: center;}
+.rating-scale {display: flex; gap: 10px; margin: 15px 0; align-items: center; flex-wrap: wrap;}
 .rating-btn {padding: 10px 15px; border: 2px solid #ddd; background: white; border-radius: 8px; cursor: pointer; transition: all 0.3s; font-weight: 600;}
 .rating-btn:hover {border-color: #667eea; color: #667eea;}
 .rating-btn.selected {background: #667eea; color: white; border-color: #667eea;}
@@ -54,23 +117,97 @@ input:focus, select:focus {outline: none; border-color: #667eea;}
 .back-btn:hover {background: #666;}
 
 h1, h2, h3 {color: #667eea;}
+
+/* ========== استجابة للهواتف ========== */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: flex;
+  }
+  
+  .container {
+    position: relative;
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 0;
+    right: -280px;
+    z-index: 1000;
+    height: 100vh;
+    overflow-y: auto;
+    transition: right 0.3s ease;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  }
+  
+  .sidebar.open {
+    right: 0;
+  }
+  
+  .close-sidebar {
+    display: block;
+  }
+  
+  .content {
+    padding: 20px 15px;
+    width: 100%;
+  }
+  
+  header h1 {
+    font-size: 1.5em;
+  }
+  
+  header p {
+    font-size: 0.85em;
+  }
+  
+  .disorder-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .symptom-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .rating-scale {
+    gap: 5px;
+  }
+  
+  .rating-btn {
+    padding: 8px 12px;
+    font-size: 0.85em;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+  
+  .result-box h2 {
+    font-size: 1.5em;
+  }
+  
+  .disorder-details h3 {
+    font-size: 1.1em;
+  }
+}
 </style>
 </head>
 <body>
 
 <header>
+<button class="menu-toggle" id="menuToggle" aria-label="فتح القائمة">☰</button>
 <h1>🧠 صفحة الصحة النفسية</h1>
 <p>اكتشف حالتك النفسية وتعرف على الاضطرابات</p>
 </header>
 
 <div class="container">
 
-<div class="sidebar">
+<div class="sidebar" id="sidebar">
+<button class="close-sidebar" id="closeSidebarBtn">✕ إغلاق</button>
 <h3>📱 القائمة</h3>
-<button onclick="showMentalHealthHome()">🏠 الرئيسية</button>
-<button onclick="showDisorders()">📚 الاضطرابات</button>
-<button onclick="showSymptomDiagnosis()">🔍 تشخيص الأعراض</button>
-<button onclick="showAbout()">ℹ️ معلومات</button>
+<button onclick="showMentalHealthHome(); closeSidebarOnMobile();">🏠 الرئيسية</button>
+<button onclick="showDisorders(); closeSidebarOnMobile();">📚 الاضطرابات</button>
+<button onclick="showSymptomDiagnosis(); closeSidebarOnMobile();">🔍 تشخيص الأعراض</button>
+<button onclick="showAbout(); closeSidebarOnMobile();">ℹ️ معلومات</button>
 </div>
 
 <div class="content" id="content"></div>
@@ -78,6 +215,44 @@ h1, h2, h3 {color: #667eea;}
 </div>
 
 <script>
+
+// إغلاق القائمة على الموبايل بعد الضغط على زر
+function closeSidebarOnMobile() {
+  if (window.innerWidth <= 768) {
+    document.getElementById('sidebar').classList.remove('open');
+  }
+}
+
+// فتح وإغلاق القائمة
+document.addEventListener('DOMContentLoaded', function() {
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const closeSidebar = document.getElementById('closeSidebarBtn');
+  
+  if (menuToggle) {
+    menuToggle.addEventListener('click', function() {
+      sidebar.classList.toggle('open');
+    });
+  }
+  
+  if (closeSidebar) {
+    closeSidebar.addEventListener('click', function() {
+      sidebar.classList.remove('open');
+    });
+  }
+  
+  // إغلاق القائمة عند النقر خارجها على الموبايل
+  document.addEventListener('click', function(event) {
+    if (window.innerWidth <= 768) {
+      const isClickInsideSidebar = sidebar.contains(event.target);
+      const isClickOnToggle = menuToggle && menuToggle.contains(event.target);
+      
+      if (!isClickInsideSidebar && !isClickOnToggle && sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+      }
+    }
+  });
+});
 
 // البيانات الأساسية
 const disorders = {
@@ -490,11 +665,9 @@ function showDisorders() {
   `;
   
   for (let key in disorders) {
-    // ترتيب: المقاييس الاحترافية في النهاية
     if (key === 'insecurityPro' || key === 'emotionalImbalancePro') continue;
     html += `<button class='disorder-btn' onclick="showDisorderDetails('${key}')">${disorders[key].name}</button>`;
   }
-  // إضافة المقاييس الاحترافية في النهاية
   html += `<button class='disorder-btn' style="background:linear-gradient(135deg,#7C3AED,#2563EB);color:#fff;" onclick="showDisorderDetails('insecurityPro')">🛡️ فقدان الأمان النفسي</button>`;
   html += `<button class='disorder-btn' style="background:linear-gradient(135deg,#F59E0B,#EF4444);color:#fff;" onclick="showDisorderDetails('emotionalImbalancePro')">💥 عدم الاتزان الانفعالي</button>`;
   
@@ -550,7 +723,6 @@ function showDisorderDetails(key) {
 
 // صفحة المقياس الخاصة بالاضطراب
 function showDisorderAssessment(key) {
-  // خريطة الربط بين الاضطرابات والمقاييس
   const assessmentMap = {
     anxiety: 'anxiety',
     depression: 'depression',
@@ -595,7 +767,6 @@ function showDisorderAssessment(key) {
         <div id="questions-container">
   `;
   
-  // إضافة الأسئلة
   scale.questions.forEach((question, index) => {
     let buttons = '';
     let maxVal = scale.name.includes('النوم') ? 4 : 3;
@@ -633,7 +804,6 @@ function showDisorderAssessment(key) {
 function answerQuestion(questionIndex, answer) {
   assessmentAnswers[questionIndex] = answer;
   
-  // تحديث الزر المختار
   let scale = assessmentScales[currentAssessment];
   let maxVal = scale.name.includes('النوم') ? 4 : 3;
   let startVal = scale.name.includes('النوم') ? 1 : 0;
@@ -649,7 +819,6 @@ function answerQuestion(questionIndex, answer) {
     }
   }
   
-  // تحديث رسالة الحالة
   let answerText = document.getElementById(`answer-${questionIndex}`);
   if (answerText) {
     answerText.innerText = `✓ اخترت: ${answer}`;
@@ -660,18 +829,14 @@ function answerQuestion(questionIndex, answer) {
 function submitAssessment(disorderKey) {
   let scale = assessmentScales[currentAssessment];
   
-  // التحقق من أن جميع الأسئلة تمت الإجابة عليها
   if (Object.keys(assessmentAnswers).length < scale.questions.length) {
     alert('يرجى الإجابة على جميع الأسئلة قبل المتابعة');
     return;
   }
   
-  // حساب الدرجة
   let totalScore = Object.values(assessmentAnswers).reduce((a, b) => parseInt(a) + parseInt(b), 0);
   
-  // تحديد التفسير
   let interpretation = 'غير محدد';
-  let severity = '';
   
   if (scale.name.includes('النوم')) {
     if (totalScore <= 30) interpretation = 'طبيعي';
@@ -837,7 +1002,8 @@ function showSymptomRating() {
 function rateSymptom(symptom, rating) {
   symptomRatings[symptom] = rating;
   document.getElementById(`rating-${symptom}`).innerText = `✓ درجة: ${rating} / 5`;
-  document.querySelectorAll(`[onclick*="rateSymptom('${symptom}"]`).forEach(btn => btn.classList.remove('selected'));
+  let btns = document.querySelectorAll(`[onclick*="rateSymptom('${symptom}',"]`);
+  btns.forEach(btn => btn.classList.remove('selected'));
   event.target.classList.add('selected');
 }
 
@@ -863,7 +1029,6 @@ function showDiagnosisResult() {
     color = '#dc3545';
   }
   
-  // محاولة تحديد الاضطراب
   let matchedDisorder = '';
   for (let key in disorders) {
     let disorderSymptoms = disorders[key].symptoms;
