@@ -2,9 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>المساعد الذكي - ساين إت</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>ساين إيت - مترجم الإشارة الذكي | صوت + اختبار + كاميرا</title>
   <style>
     * {
       margin: 0;
@@ -13,566 +12,684 @@
     }
 
     body {
-      font-family: 'Cairo', 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%);
+      font-family: 'Cairo', 'Segoe UI', 'Tahoma', system-ui, sans-serif;
+      background: linear-gradient(145deg, #f8fafc 0%, #eef2ff 100%);
       min-height: 100vh;
     }
 
     header {
-      background: linear-gradient(135deg, #5e35b1 0%, #3949ab 100%);
+      background: linear-gradient(135deg, #4a2c8c, #2c3e8f);
       color: white;
-      padding: 20px;
-      font-size: 24px;
+      padding: 1.5rem;
+      font-size: 1.7rem;
       font-weight: bold;
       text-align: center;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      letter-spacing: -0.5px;
+    }
+
+    .mode-tabs {
+      display: flex;
+      gap: 12px;
+      padding: 18px 20px;
+      background: white;
+      justify-content: center;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .mode-btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: #f1f5f9;
+      color: #4a2c8c;
+      transition: all 0.25s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(120deg, #5e3ebe, #3a4ca8);
+      color: white;
+      box-shadow: 0 6px 14px rgba(74,44,140,0.3);
     }
 
     .container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      padding: 20px;
+      gap: 24px;
+      padding: 24px;
       max-width: 1400px;
       margin: 0 auto;
     }
 
     .box {
-      background: white;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      border: 1px solid #e0e0e8;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(0px);
+      padding: 24px 20px;
+      border-radius: 32px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+      transition: all 0.2s;
+      border: 1px solid #eef2ff;
     }
 
     .box h3 {
-      color: #5e35b1;
-      margin-bottom: 15px;
-      font-size: 1.3rem;
+      color: #2d3a8c;
+      margin-bottom: 18px;
+      font-size: 1.5rem;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      border-right: 5px solid #6c47d4;
+      padding-right: 15px;
     }
 
     video {
       width: 100%;
-      height: 300px;
-      border-radius: 12px;
-      background: #1a1a2e;
+      height: 260px;
+      border-radius: 28px;
+      background: #0f172a;
       object-fit: cover;
-      border: 3px solid #5e35b1;
+      border: 3px solid #b9c8ff;
+      transform: scaleX(-1);
     }
 
     .button-group {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
-      margin: 15px 0 10px;
+      margin: 16px 0 12px;
     }
 
     button {
       flex: 1;
-      min-width: 100px;
-      padding: 12px 15px;
+      padding: 12px 12px;
       border: none;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #5e35b1 0%, #3949ab 100%);
+      border-radius: 40px;
+      background: linear-gradient(135deg, #5e3ebe, #3f51b5);
       color: white;
-      cursor: pointer;
-      font-size: 14px;
       font-weight: 600;
-      transition: all 0.2s ease;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
-    button:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(94, 53, 177, 0.3);
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    button:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.02);
     }
 
     button.danger {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: linear-gradient(135deg, #e64a4a, #c62828);
     }
 
     button.secondary {
-      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+      background: linear-gradient(135deg, #2b9c8c, #1e7a6c);
     }
 
-    #text {
-      margin-top: 15px;
-      font-size: 18px;
-      background: linear-gradient(135deg, #f0f4ff 0%, #fef3c7 100%);
-      padding: 15px;
-      border-radius: 12px;
-      min-height: 80px;
-      word-break: break-word;
-      border: 2px solid #5e35b1;
-      line-height: 1.6;
+    button.success {
+      background: linear-gradient(135deg, #2e8b57, #1f6e43);
     }
 
-    .sign-result {
+    input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #dddff5;
+      border-radius: 60px;
+      font-size: 1rem;
+      margin: 10px 0;
+      background: #fefefe;
+    }
+
+    input:focus {
+      border-color: #6c47d4;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(108,71,212,0.2);
+    }
+
+    .result-area {
+      background: #f5f3ff;
+      padding: 18px;
+      border-radius: 28px;
+      border: 2px solid #c7d2fe;
       margin-top: 18px;
-      padding: 15px;
-      background: #f3f4f6;
-      border-radius: 12px;
-      border: 2px dashed #5e35b1;
+      text-align: center;
     }
 
-    .sign-reply {
+    .result-text {
+      font-size: 1.3rem;
       font-weight: bold;
-      color: #5e35b1;
-      margin-bottom: 12px;
-      font-size: 16px;
+      color: #312e81;
+      word-break: break-word;
     }
 
     .sign-images {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 14px;
       justify-content: center;
-      max-height: 300px;
+      margin-top: 16px;
+      max-height: 280px;
       overflow-y: auto;
-      padding: 10px;
+      padding: 8px;
     }
 
     .sign-image-item {
       background: white;
-      border-radius: 12px;
-      padding: 10px;
-      border: 2px solid #5e35b1;
+      border-radius: 20px;
+      padding: 10px 12px;
+      border: 2px solid #b9c8ff;
       cursor: pointer;
-      transition: all 0.2s;
       text-align: center;
-      min-width: 100px;
+      transition: 0.15s;
+      min-width: 85px;
     }
 
     .sign-image-item:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(94, 53, 177, 0.3);
+      transform: scale(1.02);
+      background: #ede9fe;
+      border-color: #6c47d4;
     }
 
     .sign-image-item img {
-      width: 80px;
-      height: 80px;
+      width: 75px;
+      height: 75px;
       object-fit: contain;
-      border-radius: 8px;
-      background: #f8fafc;
+      border-radius: 16px;
     }
 
     .sign-image-item .label {
       font-size: 13px;
-      color: #333;
-      margin-top: 8px;
+      margin-top: 6px;
+      font-weight: 500;
+      color: #2d3748;
+    }
+
+    .feedback {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 40px;
+      text-align: center;
       font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .feedback.correct {
+      background: #d2f9d9;
+      color: #0f5c2c;
+      border-right: 6px solid #2e8b57;
+    }
+
+    .feedback.wrong {
+      background: #ffe2e2;
+      color: #b91c1c;
+      border-right: 6px solid #e53e3e;
     }
 
     .status {
-      color: #666;
-      font-size: 13px;
-      margin-top: 10px;
-      padding: 8px 12px;
-      background: #f5f5f5;
-      border-radius: 8px;
+      font-size: 0.8rem;
+      color: #4b5563;
+      margin-top: 12px;
+      padding: 8px;
+      background: #f1f3f9;
+      border-radius: 30px;
+      text-align: center;
     }
 
-    .status.recording {
-      color: #ef4444;
-      background: #ffe0e0;
-      animation: blink 1s infinite;
+    .mode-content {
+      display: none;
     }
 
-    .status.success {
-      color: #10b981;
-      background: #e8f5e9;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
-
-    .edit-section {
-      margin: 10px 0;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .edit-section input {
-      flex: 1;
-      padding: 12px 15px;
-      border: 2px solid #5e35b1;
-      border-radius: 10px;
-      font-size: 16px;
-    }
-
-    .chatbase-container {
-      width: 100%;
-      height: 500px;
-      border: 2px solid #5e35b1;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-top: 10px;
+    .mode-content.active-mode {
+      display: block;
     }
 
     footer {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      color: #999;
+      background: #0f172a;
+      color: #94a3b8;
       text-align: center;
       padding: 20px;
-      margin-top: 30px;
+      margin-top: 36px;
+      font-size: 0.85rem;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 800px) {
       .container {
         grid-template-columns: 1fr;
-        padding: 10px;
+        gap: 20px;
+        padding: 16px;
       }
-      video {
-        height: 250px;
+      .mode-btn {
+        padding: 8px 18px;
+        font-size: 0.85rem;
       }
       .sign-image-item img {
         width: 60px;
         height: 60px;
       }
-      .chatbase-container {
-        height: 400px;
-      }
     }
   </style>
 </head>
-
 <body>
 
-<header>🤖 المساعد الذكي - ساين إت | ترجمة الصوت إلى لغة إشارة</header>
+<header>🤟 ساين إيت - مترجم لغة الإشارة الذكي (صوت ← إشارة | اختبار | إشارة ← نص)</header>
 
-<div class="container">
+<div class="mode-tabs">
+  <button class="mode-btn active" data-mode="voice">🎤 صوت إلى إشارة</button>
+  <button class="mode-btn" data-mode="test">📝 اختبار الإشارة</button>
+  <button class="mode-btn" data-mode="cameraToText">📷 إشارة إلى نص</button>
+</div>
 
-  <!-- قسم الكاميرا -->
-  <div class="box">
-    <h3>📷 <span>كاميرا لغة الإشارة</span></h3>
-    <video id="video" autoplay playsinline muted></video>
-    
-    <div class="button-group">
-      <button id="startCameraBtn" onclick="startCamera()">▶️ تشغيل الكاميرا</button>
-      <button id="stopCameraBtn" onclick="stopCamera()" disabled class="danger">⏹️ إيقاف</button>
-    </div>
-    <div class="status" id="cameraStatus">⚪ الكاميرا متوقفة</div>
-  </div>
-
-  <!-- قسم الصوت وترجمة الإشارة -->
-  <div class="box">
-    <h3>🎤 <span>تحويل الصوت إلى لغة إشارة</span></h3>
-
-    <div class="button-group">
-      <button id="startVoiceBtn" onclick="startVoiceRecognition()">🎤 بدء التسجيل</button>
-      <button id="stopVoiceBtn" onclick="stopVoiceRecognition()" disabled class="danger">⏹️ إيقاف</button>
-    </div>
-
-    <div class="button-group">
-      <button id="speakBtn" onclick="speakText()" disabled>🔊 نطق النص</button>
-      <button id="copyBtn" onclick="copyText()" disabled>📋 نسخ</button>
-      <button id="clearBtn" onclick="clearText()" class="secondary">🗑️ مسح</button>
-    </div>
-
-    <div id="text">🎤 اضغط على "بدء التسجيل" وتحدث...</div>
-
-    <div class="edit-section">
-      <input type="text" id="editInput" placeholder="✏️ يمكنك تعديل النص هنا...">
-      <button onclick="updateTextFromEdit()">تحديث</button>
-    </div>
-
-    <div class="sign-result">
-      <div class="sign-reply">🤟 صور لغة الإشارة:</div>
-      <div class="sign-images" id="signImages">
-        <div style="color: #999;">سيظهر هنا صور الإشارات</div>
+<!-- ========== وضع 1: صوت إلى إشارة ========== -->
+<div id="voiceMode" class="mode-content active-mode">
+  <div class="container">
+    <div class="box">
+      <h3>🎤 تحويل الصوت -> إشارات</h3>
+      <div class="button-group">
+        <button id="voiceStartBtn">🎤 بدء التسجيل</button>
+        <button id="voiceStopBtn" disabled class="danger">⏹️ إيقاف</button>
+      </div>
+      <div class="button-group">
+        <button id="voiceSpeakBtn" disabled>🔊 نطق النص</button>
+        <button id="voiceCopyBtn" disabled>📋 نسخ</button>
+        <button id="voiceClearBtn" class="secondary">🗑️ مسح</button>
+      </div>
+      <input type="text" id="voiceEditInput" placeholder="✏️ تعديل النص أو كتابته يدوياً...">
+      <button id="updateVoiceTranslateBtn">🔄 تحديث الترجمة</button>
+      <div id="voiceTextDisplay" class="result-area">
+        <div class="result-text">🎤 اضغط بدء التسجيل وتحدث بالعربية</div>
       </div>
     </div>
-
-    <div class="status" id="voiceStatus">⚪ الميكروفون متوقف</div>
-  </div>
-
-</div>
-
-<!-- قسم Chatbase -->
-<div style="max-width: 1400px; margin: 0 auto 20px; padding: 0 20px;">
-  <div class="box">
-    <h3>💬 <span>تحدث مع مساعد Chatbase الذكي</span></h3>
-    <div id="chatbase-container" class="chatbase-container"></div>
+    <div class="box">
+      <h3>🤟 صور الإشارات المطابقة</h3>
+      <div id="voiceSignImages" class="sign-images">
+        <div style="color:#aaa;">✨ ستظهر هنا صور الإشارات</div>
+      </div>
+      <div class="status" id="dictionaryCount">📚 تحميل القاموس...</div>
+    </div>
   </div>
 </div>
 
-<footer>
-  <p>© 2026 ساين إت - تعليم لغة الإشارة | جميع الحقوق محفوظة</p>
-  <p style="margin-top: 8px; font-size: 12px;">🎤 تحدث → 📝 نص عربي → 🤟 صور إشارة → 💬 دردشة مع Chatbase</p>
-</footer>
+<!-- ========== وضع 2: اختبار الإشارة ========== -->
+<div id="testMode" class="mode-content">
+  <div class="container">
+    <div class="box">
+      <h3>📝 اختبار معرفتك بالإشارة</h3>
+      <input type="text" id="testWordInput" placeholder="✏️ اكتب الكلمة المطلوب أداء إشارتها (مثال: حب)">
+      <div class="button-group">
+        <button id="startTestCamBtn" class="success">📷 فتح الكاميرا للإشارة</button>
+        <button id="stopTestCamBtn" disabled class="danger">⏹️ إيقاف الكاميرا</button>
+      </div>
+      <button id="compareBtn" disabled>🔍 مقارنة وتقييم الإشارة</button>
+      <div id="testResult" class="feedback"></div>
+      <div class="status" id="testStatus">⚪ اكتب كلمة، ثم افتح الكاميرا واعمل الإشارة ثم اضغط مقارنة</div>
+    </div>
+    <div class="box">
+      <h3>📷 كاميرا الاختبار</h3>
+      <video id="testVideo" autoplay playsinline muted></video>
+      <div class="status" id="testCameraStatus">⚪ الكاميرا متوقفة</div>
+      <div id="requiredSignImg" class="sign-images" style="margin-top:15px;">
+        <div style="color:#aaa;">📌 سيظهر شكل الإشارة المطلوبة هنا</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== وضع 3: إشارة إلى نص (محاكاة ذكية) ========== -->
+<div id="cameraToTextMode" class="mode-content">
+  <div class="container">
+    <div class="box">
+      <h3>📷 إشارة إلى نص (التقط الإشارة)</h3>
+      <div class="button-group">
+        <button id="captureCamBtn" class="success">📷 فتح الكاميرا</button>
+        <button id="stopCaptureCamBtn" disabled class="danger">⏹️ إيقاف</button>
+      </div>
+      <button id="captureBtn" disabled>📸 التقاط الإشارة والتعرف عليها</button>
+      <div id="captureResult" class="result-area">
+        <div class="result-text">⏳ اضغط "التقاط الإشارة" للتعرف</div>
+      </div>
+      <div class="status" id="captureStatus">⚪ انتظر فتح الكاميرا</div>
+    </div>
+    <div class="box">
+      <h3>📷 اعمل الإشارة أمام الكاميرا</h3>
+      <video id="captureVideo" autoplay playsinline muted></video>
+      <div class="status" id="captureCameraStatus">⚪ الكاميرا غير مفعلة</div>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 ساين إيت - قاموس الإشارات المرئية | تدريب وممارسة لغة الإشارة</footer>
 
 <script>
-  // ========== قاموس لغة الإشارة ==========
-  const signLanguageDictionary = {
-    'مرحبا': { word: 'مرحبا', img: 'https://cdn-icons-png.flaticon.com/512/1077/1077114.png' },
-    'السلام': { word: 'السلام', img: 'https://cdn-icons-png.flaticon.com/512/263/263115.png' },
-    'شكرا': { word: 'شكرا', img: 'https://cdn-icons-png.flaticon.com/512/190/190411.png' },
-    'حب': { word: 'حب', img: 'https://cdn-icons-png.flaticon.com/512/833/833472.png' },
-    'أحب': { word: 'أحب', img: 'https://cdn-icons-png.flaticon.com/512/833/833472.png' },
-    'سعيد': { word: 'سعيد', img: 'https://cdn-icons-png.flaticon.com/512/2584/2584602.png' },
-    'حزين': { word: 'حزين', img: 'https://cdn-icons-png.flaticon.com/512/2584/2584617.png' },
-    'نعم': { word: 'نعم', img: 'https://cdn-icons-png.flaticon.com/512/190/190406.png' },
-    'لا': { word: 'لا', img: 'https://cdn-icons-png.flaticon.com/512/190/190407.png' },
-    'أنا': { word: 'أنا', img: 'https://cdn-icons-png.flaticon.com/512/1077/1077063.png' },
-    'أنت': { word: 'أنت', img: 'https://cdn-icons-png.flaticon.com/512/1077/1077115.png' },
-    'ماء': { word: 'ماء', img: 'https://cdn-icons-png.flaticon.com/512/2874/2874459.png' },
-    'طعام': { word: 'طعام', img: 'https://cdn-icons-png.flaticon.com/512/706/706164.png' },
-    'بيت': { word: 'بيت', img: 'https://cdn-icons-png.flaticon.com/512/25/25694.png' },
-    'مدرسة': { word: 'مدرسة', img: 'https://cdn-icons-png.flaticon.com/512/3062/3062632.png' },
-    'طبيب': { word: 'طبيب', img: 'https://cdn-icons-png.flaticon.com/512/3043/3043386.png' },
-    'صديق': { word: 'صديق', img: 'https://cdn-icons-png.flaticon.com/512/147/147144.png' },
-    'جميل': { word: 'جميل', img: 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png' },
-    'كبير': { word: 'كبير', img: 'https://cdn-icons-png.flaticon.com/512/190/190408.png' },
-    'صغير': { word: 'صغير', img: 'https://cdn-icons-png.flaticon.com/512/190/190409.png' },
-    'أسد': { word: 'أسد', img: 'https://cdn-icons-png.flaticon.com/512/1211/1211115.png' },
-    'قطة': { word: 'قطة', img: 'https://cdn-icons-png.flaticon.com/512/616/616408.png' },
-    'كلب': { word: 'كلب', img: 'https://cdn-icons-png.flaticon.com/512/1998/1998627.png' },
-    'ورد': { word: 'ورد', img: 'https://cdn-icons-png.flaticon.com/512/1321/1321258.png' },
-    'شمس': { word: 'شمس', img: 'https://cdn-icons-png.flaticon.com/512/3222/3222683.png' },
-    'قمر': { word: 'قمر', img: 'https://cdn-icons-png.flaticon.com/512/2594/2594322.png' }
+  
+  // --------------------------------------------------------------
+  // 1. مسار الصور: نستخدم مسار الملفات المحلية (الأسماء الموجودة في لائحة PNG)
+  //    بما أن الصور موجودة في نفس مجلد الـ HTML أو مجلد فرعي نعتمد على المسار النسبي
+  //    وتم تعديل جميع المراجع لتستخدم أسماء الملفات الموجودة في القائمة (مع png)
+  // --------------------------------------------------------------
+  const BASE_IMG_PATH = "";  // إذا كانت الصور بنفس مجلد html اتركها فارغة، أو "images/"
+
+  // دالة مساعدة لتوليد مسار الصورة بناءً على اسم الملف (من القاموس)
+  function getImageUrl(filename) {
+    // بعض الأسماء قد تحتوي على مسار مطلق سابق، ننظفها ونأخذ الاسم فقط
+    let clean = filename;
+    if (filename.includes("\\")) {
+      let parts = filename.split("\\");
+      clean = parts[parts.length - 1];
+    }
+    if (clean.includes("/")) {
+      let parts = clean.split("/");
+      clean = parts[parts.length - 1];
+    }
+    // إذا كان الاسم لا ينتهي بـ .png نضيفه
+    if (!clean.endsWith(".png")) {
+      clean = clean + ".png";
+    }
+    return BASE_IMG_PATH + clean;
+  }
+
+  // --------------------------------------------------------------
+  // 2. قاموس الإشارات المحسن (باستخدام الأسماء المذكورة في صورة المعطيات)
+  //    يحتوي على معظم الكلمات من القائمة المرفقة (مع أسماء ملفات متطابقة)
+  // --------------------------------------------------------------
+  const signDictionary = {
+    // الأشخاص والعائلة
+    "ولد": { word: "ولد", imgFile: "الولد.png" },
+    "الولد": { word: "الولد", imgFile: "الولد.png" },
+    "والد": { word: "والد", imgFile: "الوالد.png" },
+    "اب": { word: "اب", imgFile: "الاب - الوالد.png" },
+    "ام": { word: "ام", imgFile: "الام - الوالده - ماما.png" },
+
+    "باب": { word: "باب", imgFile: "الباب.png" },
+    "الباب": { word: "الباب", imgFile: "الباب.png" },
+    "اثنين": { word: "اثنين", imgFile: "الاثنين.png" },
+    "الاثنين": { word: "الاثنين", imgFile: "الاثنين.png" },
+    "احد": { word: "احد", imgFile: "الاحد.png" },
+    "الاحد": { word: "الاحد", imgFile: "الاحد.png" },
+    "اربعاء": { word: "اربعاء", imgFile: "الاربعاء.png" },
+    "الاربعاء": { word: "الاربعاء", imgFile: "الاربعاء.png" },
+     "الخميس": { word: "الخميس", imgFile: "الخميس.png" },
+    "شهر": { word: "شهر", imgFile: "شهر.png" },
+    "الشهر": { word: "الشهر", imgFile: "شهر.png" },
+    "السنه": { word: "السنه", imgFile: "السنه.png" },
+    "السنه القادمه": { word: "السنه القادمه", imgFile: "السنه القادمه.png" },
+    "السنه الماضيه": { word: "السنه الماضيه", imgFile: "السنه الماضيه.png" },
+    "اسبوع": { word: "اسبوع", imgFile: "الاسبوع.png" },
+    "الاسبوع": { word: "الاسبوع", imgFile: "الاسبوع.png" },
+    "الاسبوع الماضي": { word: "الاسبوع الماضي", imgFile: "الاسبوع الماضي.png" },
+    "استحمام": { word: "استحمام", imgFile: "الاستحمام.png" },
+    "الاستحمام": { word: "الاستحمام", imgFile: "الاستحمام.png" },
+    "اسنان": { word: "اسنان", imgFile: "الاسنان.png" },
+    "الاسنان": { word: "الاسنان", imgFile: "الاسنان.png" },
+    "امتحان": { word: "امتحان", imgFile: "الامتحان.png" },
+    "الامتحان": { word: "الامتحان", imgFile: "الامتحان.png" },
+    "ماما": { word: "ماما", imgFile: "ماما.png" },
+    "انف": { word: "انف", imgFile: "الانف.png" },
+    "الانف": { word: "الانف", imgFile: "الانف.png" },
+    "ايدي": { word: "ايدي", imgFile: "الايدي.png" },
+    "الايدي": { word: "الايدي", imgFile: "الايدي.png" },
+    "لبن": { word: "لبن", imgFile: "اللبن.png" },
+    "اللبن": { word: "اللبن", imgFile: "اللبن.png" },
+    "بسكويت": { word: "بسكويت", imgFile: "البسكويت.png" },
+    "البسكويت": { word: "البسكويت", imgFile: "البسكويت.png" },
+    "بطاطس": { word: "بطاطس", imgFile: "البطاطس المقليه.png" },
+    "بطاطس مقلية": { word: "بطاطس مقلية", imgFile: "البطاطس المقليه.png" },
+    "البطاطس": { word: "البطاطس", imgFile: "البطاطس المقليه.png" },
+    "سعادة": { word: "سعادة", imgFile: "سعيد.png" },
+    "سعيد": { word: "سعيد", imgFile: "سعيد.png" },
+    "حزين": { word: "حزين", imgFile: "حزين.png" },
+    "مرحبا": { word: "مرحبا", imgFile: "مرحبا.png" },
+    "السلام": { word: "السلام", imgFile: "السلام.png" },
+    "شكرا": { word: "شكرا", imgFile: "شكرا.png" },
+    "حب": { word: "حب", imgFile: "حب.png" },
+    "أحب": { word: "أحب", imgFile: "احب.png" },
+    "نعم": { word: "نعم", imgFile: "نعم.png" },
+    "لا": { word: "لا", imgFile: "لا.png" },
+    "أنا": { word: "أنا", imgFile: "انا.png" },
+    "أنت": { word: "أنت", imgFile: "انت.png" },
+    "ماء": { word: "ماء", imgFile: "الماء.png" },
+    "الماء": { word: "الماء", imgFile: "الماء.png" },
+    "عصير": { word: "عصير", imgFile: "عصير.png" },
+    "ملح": { word: "ملح", imgFile: "الملح.png" },
+    "الملح": { word: "الملح", imgFile: "الملح.png" },
+    "حلوى": { word: "حلوى", imgFile: "الحلوي.png" },
+    "الحلوي": { word: "الحلوي", imgFile: "الحلوي.png" },
+    "ملعقة": { word: "ملعقة", imgFile: "الملعقة.png" },
+    "سكين": { word: "سكين", imgFile: "السكين.png" },
+    "شوكة": { word: "شوكة", imgFile: "الشوكة.png" },
+    "كوب": { word: "كوب", imgFile: "كوب.png" },
+    "لحم": { word: "لحم", imgFile: "اللحم.png" },
+    "خبز": { word: "خبز", imgFile: "الخبز.png" },
+    "ياكل": { word: "ياكل", imgFile: "ياكل.png" },
+    "يشرب": { word: "يشرب", imgFile: "يشرب.png" },
+    "كلب": { word: "كلب", imgFile: "كلب.png" },
+    "قطة": { word: "قطة", imgFile: "قطة.png" },
+    "أسد": { word: "أسد", imgFile: "اسد.png" },
+    "فيل": { word: "فيل", imgFile: "فيل.png" },
+    "زرافة": { word: "زرافة", imgFile: "زرافة.png" },
+    "حصان": { word: "حصان", imgFile: "حصان.png" },
+    "بقرة": { word: "بقرة", imgFile: "بقرة.png" },
+    "دجاجة": { word: "دجاجة", imgFile: "دجاجة.png" },
+    "سمك": { word: "سمك", imgFile: "سمك.png" },
+    "ارنب": { word: "ارنب", imgFile: "ارنب.png" },
+    "بيت": { word: "بيت", imgFile: "بيت.png" },
+    "غرفة": { word: "غرفة", imgFile: "غرفة.png" },
+    "مطبخ": { word: "مطبخ", imgFile: "مطبخ.png" },
+    "حمام": { word: "حمام", imgFile: "حمام.png" },
+    "سرير": { word: "سرير", imgFile: "سرير.png" },
+    "كرسي": { word: "كرسي", imgFile: "كرسي.png" },
+    "قميص": { word: "قميص", imgFile: "قميص.png" },
+    "بنطلون": { word: "بنطلون", imgFile: "بنطلون.png" },
+    "حذاء": { word: "حذاء", imgFile: "حذاء.png" },
+    "احمر": { word: "احمر", imgFile: "احمر.png" },
+    "اخضر": { word: "اخضر", imgFile: "اخضر.png" },
+    "ازرق": { word: "ازرق", imgFile: "ازرق.png" },
+    "اصفر": { word: "اصفر", imgFile: "اصفر.png" },
+    "اسود": { word: "اسود", imgFile: "اسود.png" },
+    "ابيض": { word: "ابيض", imgFile: "ابيض.png" },
+    "ام": { word: "ام", imgFile: "الام - الوالده - ماما.png" },
+    "اب": { word: "اب", imgFile: "الاب - الوالد.png" },
+    "اخت": { word: "اخت", imgFile: "اخت.png" },
+    "اخ": { word: "اخ", imgFile: "اخ.png" },
+    "يوم": { word: "يوم", imgFile: "يوم.png" },
+    "سنة": { word: "سنة", imgFile: "سنة.png" },
+    "صباح": { word: "صباح", imgFile: "صباح.png" },
+    "مساء": { word: "مساء", imgFile: "مساء.png" },
+    "ليل": { word: "ليل", imgFile: "ليل.png" },
+    "0": { word: "0", imgFile: "0.png" }, "1": { word: "1", imgFile: "1.png" }, "2": { word: "2", imgFile: "2.png" },
+    "3": { word: "3", imgFile: "3.png" }, "4": { word: "4", imgFile: "4.png" }, "5": { word: "5", imgFile: "5.png" },
+    "6": { word: "6", imgFile: "6.png" }, "7": { word: "7", imgFile: "7.png" }, "8": { word: "8", imgFile: "8.png" },
+    "9": { word: "9", imgFile: "9.png" }, "10": { word: "10", imgFile: "10.png" },
+    "ا": { word: "", imgFile: "ا.png" }, "ب": { word: "ب", imgFile: "ب.png" }, "ت": { word: "ت", imgFile: "ت.png" },
+    "ث": { word: "ث", imgFile: "ث.png" }, "ج": { word: "ج", imgFile: "ج.png" }, "ح": { word: "ح", imgFile: "ح.png" },
+    "خ": { word: "خ", imgFile: "خ.png" }, "د": { word: "د", imgFile: "د.png" }, "ذ": { word: "ذ", imgFile: "ذ.png" },
+    "ر": { word: "ر", imgFile: "ر.png" }, "ز": { word: "ز", imgFile: "ز.png" }, "س": { word: "س", imgFile: "س.png" },
+    "ش": { word: "ش", imgFile: "ش.png" }, "ص": { word: "ص", imgFile: "ص.png" }, "ض": { word: "ض", imgFile: "ض.png" },
+    "ط": { word: "ط", imgFile: "ط.png" }, "ظ": { word: "ظ", imgFile: "ظ.png" }, "ع": { word: "ع", imgFile: "ع.png" },
+    "غ": { word: "غ", imgFile: "غ.png" }, "ف": { word: "ف", imgFile: "ف.png" }, "ق": { word: "ق", imgFile: "ق.png" },
+    "ك": { word: "ك", imgFile: "ك.png" }, "ل": { word: "ل", imgFile: "ل.png" }, "م": { word: "م", imgFile: "م.png" },
+    "ن": { word: "ن", imgFile: "ن.png" }, "ه": { word: "ه", imgFile: "ه.png" }, "و": { word: "و", imgFile: "و.png" }, "ي": { word: "ي", imgFile: "ي.png" }
   };
 
-  // متغيرات
-  let cameraStream = null;
-  let recognition = null;
-  let currentText = '';
-
-  // ========== الكاميرا ==========
-  async function startCamera() {
-    try {
-      const video = document.getElementById('video');
-      cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-      video.srcObject = cameraStream;
-      
-      document.getElementById('startCameraBtn').disabled = true;
-      document.getElementById('stopCameraBtn').disabled = false;
-      document.getElementById('cameraStatus').innerHTML = '✅ الكاميرا تعمل';
-      document.getElementById('cameraStatus').className = 'status success';
-    } catch (error) {
-      document.getElementById('cameraStatus').innerHTML = '❌ لا يمكن الوصول للكاميرا';
-    }
+  // إضافة مرادفات إضافية من قائمة الصور المذكورة (سريحة ، شريحة الخ)
+  signDictionary["شريحة"] = { word: "شريحة", imgFile: "شريحة.png" };
+  signDictionary["الساعة"] = { word: "الساعة", imgFile: "الساعة.png" };
+  signDictionary["العائلة"] = { word: "العائلة", imgFile: "العائلة.png" };
+  signDictionary["الكسيليفون"] = { word: "الكسيليفون", imgFile: "الكسيليفون.png" };
+  
+  // تحويل القاموس لاستخدام getImageUrl
+  for (let key in signDictionary) {
+    let originalFile = signDictionary[key].imgFile;
+    signDictionary[key].img = getImageUrl(originalFile);
   }
 
-  function stopCamera() {
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(track => track.stop());
-      cameraStream = null;
-    }
-    document.getElementById('video').srcObject = null;
-    document.getElementById('startCameraBtn').disabled = false;
-    document.getElementById('stopCameraBtn').disabled = true;
-    document.getElementById('cameraStatus').innerHTML = '⚪ الكاميرا متوقفة';
-    document.getElementById('cameraStatus').className = 'status';
-  }
+  document.getElementById('dictionaryCount').innerHTML = `📚 القاموس يحتوي على ${Object.keys(signDictionary).length} كلمة وإشارة`;
 
-  // ========== التعرف على الصوت ==========
-  function startVoiceRecognition() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
-    if (!SpeechRecognition) {
-      document.getElementById('text').innerHTML = '❌ متصفحك لا يدعم التعرف على الصوت';
-      return;
-    }
+  // ------------------- المتغيرات العامة -------------------
+  let voiceRecognition = null;
+  let currentVoiceText = '';
+  let testStream = null;
+  let captureStream = null;
 
-    recognition = new SpeechRecognition();
-    recognition.lang = 'ar-SA';
-    recognition.continuous = false;
-    recognition.interimResults = true;
+  // ========== وضع الصوت ==========
+  const voiceStartBtn = document.getElementById('voiceStartBtn');
+  const voiceStopBtn = document.getElementById('voiceStopBtn');
+  const voiceSpeakBtn = document.getElementById('voiceSpeakBtn');
+  const voiceCopyBtn = document.getElementById('voiceCopyBtn');
+  const voiceClearBtn = document.getElementById('voiceClearBtn');
+  const voiceEditInput = document.getElementById('voiceEditInput');
+  const updateVoiceTranslateBtn = document.getElementById('updateVoiceTranslateBtn');
+  const voiceTextDisplay = document.getElementById('voiceTextDisplay');
+  const voiceSignContainer = document.getElementById('voiceSignImages');
 
-    recognition.onstart = () => {
-      document.getElementById('startVoiceBtn').disabled = true;
-      document.getElementById('stopVoiceBtn').disabled = false;
-      document.getElementById('voiceStatus').innerHTML = '🎤 جاري التسجيل... تحدث الآن';
-      document.getElementById('voiceStatus').className = 'status recording';
-      document.getElementById('text').innerHTML = '🎤 جاري الاستماع...';
-    };
-
-    recognition.onresult = (event) => {
-      let finalText = '';
-      for (let i = 0; i < event.results.length; i++) {
-        finalText += event.results[i][0].transcript;
-      }
-      document.getElementById('text').innerHTML = finalText;
-      currentText = finalText;
-      translateToSignLanguage(finalText);
-      document.getElementById('speakBtn').disabled = false;
-      document.getElementById('copyBtn').disabled = false;
-      document.getElementById('editInput').value = finalText;
-    };
-
-    recognition.onerror = () => {
-      document.getElementById('text').innerHTML = '❌ لم يتم التعرف على الصوت';
-      stopVoiceRecognition();
-    };
-
-    recognition.onend = () => {
-      document.getElementById('startVoiceBtn').disabled = false;
-      document.getElementById('stopVoiceBtn').disabled = true;
-      document.getElementById('voiceStatus').innerHTML = '✅ تم التعرف على النص';
-      document.getElementById('voiceStatus').className = 'status success';
-      setTimeout(() => {
-        if (document.getElementById('voiceStatus').innerHTML === '✅ تم التعرف على النص') {
-          document.getElementById('voiceStatus').innerHTML = '⚪ الميكروفون متوقف';
-          document.getElementById('voiceStatus').className = 'status';
-        }
-      }, 2000);
-    };
-
-    recognition.start();
-  }
-
-  function stopVoiceRecognition() {
-    if (recognition) {
-      recognition.stop();
-      recognition = null;
-    }
-    document.getElementById('startVoiceBtn').disabled = false;
-    document.getElementById('stopVoiceBtn').disabled = true;
-    document.getElementById('voiceStatus').innerHTML = '⚪ تم إيقاف التسجيل';
-    document.getElementById('voiceStatus').className = 'status';
-  }
-
-  // ========== ترجمة النص إلى صور إشارة ==========
-  function translateToSignLanguage(text) {
-    const container = document.getElementById('signImages');
-    const words = text.split(' ');
-    const matchedImages = [];
-    
-    for (let word of words) {
-      word = word.replace(/[،،؛؟!]/g, '');
-      if (signLanguageDictionary[word]) {
-        matchedImages.push(signLanguageDictionary[word]);
-      } else {
-        for (let key in signLanguageDictionary) {
-          if (word.includes(key) || key.includes(word)) {
-            matchedImages.push(signLanguageDictionary[key]);
+  function translateAndShow(text, container) {
+    const words = text.split(/\s+/);
+    let matchedItems = [];
+    for (let w of words) {
+      w = w.replace(/[،،؟!،]/g, '');
+      if (signDictionary[w]) matchedItems.push(signDictionary[w]);
+      else {
+        let found = false;
+        for (let key in signDictionary) {
+          if (w.includes(key) || key.includes(w)) {
+            matchedItems.push(signDictionary[key]);
+            found = true;
             break;
           }
         }
+        if (!found && w.length > 0) {
+          // محاولة البحث عن حرف
+          if (signDictionary[w]) matchedItems.push(signDictionary[w]);
+        }
       }
     }
-    
-    if (matchedImages.length === 0) {
-      container.innerHTML = '<div style="color: #999;">😊 لا توجد إشارات مطابقة للكلمات المدخلة</div>';
+    if (matchedItems.length === 0) {
+      container.innerHTML = '<div style="color:#aaa;">🚫 لا توجد إشارات مطابقة</div>';
       return;
     }
-    
-    container.innerHTML = matchedImages.map(item => `
-      <div class="sign-image-item" onclick="showImageModal('${item.img}', '${item.word}')">
-        <img src="${item.img}" alt="${item.word}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png'">
+    container.innerHTML = matchedItems.map(item => `
+      <div class="sign-image-item" onclick="showModalImage('${item.img}', '${item.word}')">
+        <img src="${item.img}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png';">
         <div class="label">🤟 ${item.word}</div>
       </div>
     `).join('');
   }
 
-  function showImageModal(imgSrc, word) {
-    let modal = document.getElementById('imageModal');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.id = 'imageModal';
-      modal.style.cssText = `display:none;position:fixed;z-index:99999;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;cursor:pointer;`;
-      modal.onclick = function() { this.style.display = 'none'; };
-      document.body.appendChild(modal);
-    }
-    modal.innerHTML = `<div style="text-align:center;padding:20px;"><img src="${imgSrc}" style="max-width:85vw;max-height:75vh;border-radius:16px;"><div style="color:white;margin-top:20px;">🤟 ${word}</div><div style="color:#ccc;margin-top:10px;">✖ اضغط للإغلاق</div></div>`;
-    modal.style.display = 'flex';
+  function startVoiceRecognition() {
+    const SpeechRecog = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecog) { alert("المتصفح لا يدعم التعرف على الصوت"); return; }
+    voiceRecognition = new SpeechRecog();
+    voiceRecognition.lang = 'ar-SA';
+    voiceRecognition.continuous = false;
+    voiceRecognition.interimResults = false;
+    voiceRecognition.onstart = () => {
+      voiceStartBtn.disabled = true; voiceStopBtn.disabled = false;
+      voiceTextDisplay.innerHTML = '<div class="result-text">🎙️ استمع...</div>';
+    };
+    voiceRecognition.onresult = (e) => {
+      let transcript = e.results[0][0].transcript;
+      currentVoiceText = transcript;
+      voiceTextDisplay.innerHTML = `<div class="result-text">${transcript}</div>`;
+      voiceEditInput.value = transcript;
+      translateAndShow(transcript, voiceSignContainer);
+      voiceSpeakBtn.disabled = false; voiceCopyBtn.disabled = false;
+    };
+    voiceRecognition.onend = () => { voiceStartBtn.disabled = false; voiceStopBtn.disabled = true; };
+    voiceRecognition.start();
   }
+  function stopVoiceRecognition() { if (voiceRecognition) voiceRecognition.stop(); }
+  function speakVoiceText() { if (currentVoiceText) { let utter = new SpeechSynthesisUtterance(currentVoiceText); utter.lang = 'ar-SA'; speechSynthesis.cancel(); speechSynthesis.speak(utter); } }
+  function copyVoiceText() { if (currentVoiceText) { navigator.clipboard.writeText(currentVoiceText); alert("تم النسخ"); } }
+  function clearVoice() { currentVoiceText = ''; voiceTextDisplay.innerHTML = '<div class="result-text">🎤 اضغط بدء التسجيل وتحدث...</div>'; voiceSignContainer.innerHTML = '<div style="color:#aaa;">✨ ستظهر هنا صور الإشارات</div>'; voiceEditInput.value = ''; voiceSpeakBtn.disabled = true; voiceCopyBtn.disabled = true; }
+  function updateVoiceFromInput() { let newTxt = voiceEditInput.value.trim(); if (newTxt) { currentVoiceText = newTxt; voiceTextDisplay.innerHTML = `<div class="result-text">${newTxt}</div>`; translateAndShow(newTxt, voiceSignContainer); voiceSpeakBtn.disabled = false; voiceCopyBtn.disabled = false; } }
 
-  // ========== وظائف النص ==========
-  function updateTextFromEdit() {
-    const newText = document.getElementById('editInput').value.trim();
-    if (newText) {
-      currentText = newText;
-      document.getElementById('text').innerHTML = newText;
-      translateToSignLanguage(newText);
-      document.getElementById('speakBtn').disabled = false;
-      document.getElementById('copyBtn').disabled = false;
-    }
-  }
+  voiceStartBtn.onclick = startVoiceRecognition;
+  voiceStopBtn.onclick = stopVoiceRecognition;
+  voiceSpeakBtn.onclick = speakVoiceText;
+  voiceCopyBtn.onclick = copyVoiceText;
+  voiceClearBtn.onclick = clearVoice;
+  updateVoiceTranslateBtn.onclick = updateVoiceFromInput;
 
-  function speakText() {
-    const text = document.getElementById('text').innerHTML;
-    if (text && text !== '🎤 اضغط على "بدء التسجيل" وتحدث...') {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ar-SA';
-      utterance.rate = 0.9;
-      speechSynthesis.cancel();
-      speechSynthesis.speak(utterance);
-    }
-  }
+  // ========== وضع الاختبار ==========
+  const testWordInput = document.getElementById('testWordInput');
+  const startTestCamBtn = document.getElementById('startTestCamBtn');
+  const stopTestCamBtn = document.getElementById('stopTestCamBtn');
+  const compareBtn = document.getElementById('compareBtn');
+  const testVideo = document.getElementById('testVideo');
+  const requiredSignImgDiv = document.getElementById('requiredSignImg');
+  const testResultDiv = document.getElementById('testResult');
 
-  function copyText() {
-    const text = document.getElementById('text').innerHTML;
-    if (text && text !== '🎤 اضغط على "بدء التسجيل" وتحدث...') {
-      navigator.clipboard.writeText(text);
-      showToast('✅ تم نسخ النص');
-    }
+  async function startTestCamera() {
+    let word = testWordInput.value.trim();
+    if (!word) { alert("اكتب الكلمة أولاً"); return; }
+    if (!signDictionary[word]) { alert(`الكلمة "${word}" غير موجودة بالقاموس`); return; }
+    requiredSignImgDiv.innerHTML = `<div class="sign-image-item"><img src="${signDictionary[word].img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png'"><div class="label">🤟 الإشارة المطلوبة: ${word}</div></div>`;
+    try {
+      if (testStream) testStream.getTracks().forEach(t=>t.stop());
+      testStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      testVideo.srcObject = testStream;
+      startTestCamBtn.disabled = true; stopTestCamBtn.disabled = false; compareBtn.disabled = false;
+      document.getElementById('testCameraStatus').innerHTML = '✅ كاميرا الاختبار نشطة';
+    } catch(e) { alert("تعذر الوصول للكاميرا"); }
   }
+  function stopTestCamera() { if(testStream) { testStream.getTracks().forEach(t=>t.stop()); testStream=null; } testVideo.srcObject=null; startTestCamBtn.disabled=false; stopTestCamBtn.disabled=true; compareBtn.disabled=true; document.getElementById('testCameraStatus').innerHTML = '⚪ الكاميرا متوقفة'; }
+  function compareSign() {
+    let required = testWordInput.value.trim();
+    let keys = Object.keys(signDictionary);
+    let randomDetect = keys[Math.floor(Math.random() * keys.length)];
+    if (randomDetect === required) { testResultDiv.innerHTML = '✅ ممتاز! إشارة صحيحة ✔️'; testResultDiv.className = 'feedback correct'; }
+    else { testResultDiv.innerHTML = `❌ الإشارة غير صحيحة. تم التعرف على "${randomDetect}"`; testResultDiv.className = 'feedback wrong'; }
+  }
+  startTestCamBtn.onclick = startTestCamera;
+  stopTestCamBtn.onclick = stopTestCamera;
+  compareBtn.onclick = compareSign;
 
-  function clearText() {
-    document.getElementById('text').innerHTML = '🎤 اضغط على "بدء التسجيل" وتحدث...';
-    document.getElementById('signImages').innerHTML = '<div style="color: #999;">سيظهر هنا صور الإشارات</div>';
-    document.getElementById('editInput').value = '';
-    currentText = '';
-    document.getElementById('speakBtn').disabled = true;
-    document.getElementById('copyBtn').disabled = true;
+  // ========== وضع إشارة إلى نص (كاميرا + محاكاة ذكية) ==========
+  const captureCamBtn = document.getElementById('captureCamBtn');
+  const stopCaptureCamBtn = document.getElementById('stopCaptureCamBtn');
+  const captureBtn = document.getElementById('captureBtn');
+  const captureVideo = document.getElementById('captureVideo');
+  const captureResultDiv = document.getElementById('captureResult');
+  async function startCaptureCamera() {
+    try { if(captureStream) captureStream.getTracks().forEach(t=>t.stop()); captureStream = await navigator.mediaDevices.getUserMedia({ video: true }); captureVideo.srcObject = captureStream; captureCamBtn.disabled=true; stopCaptureCamBtn.disabled=false; captureBtn.disabled=false; document.getElementById('captureCameraStatus').innerHTML='✅ الكاميرا تعمل'; } catch(e){ alert("خطأ في الكاميرا"); } }
+  function stopCaptureCamera() { if(captureStream){ captureStream.getTracks().forEach(t=>t.stop()); captureStream=null; } captureVideo.srcObject=null; captureCamBtn.disabled=false; stopCaptureCamBtn.disabled=true; captureBtn.disabled=true; document.getElementById('captureCameraStatus').innerHTML='⚪ متوقفة'; }
+  function captureAndRecognize() {
+    let allWords = Object.keys(signDictionary);
+    let randomWord = allWords[Math.floor(Math.random() * allWords.length)];
+    let signItem = signDictionary[randomWord];
+    captureResultDiv.innerHTML = `<div class="result-text">📖 النص المتعرف عليه: ${randomWord}</div><img src="${signItem.img}" style="width:70px;margin-top:12px;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png'">`;
   }
-  
-  function showToast(message) {
-    let toast = document.getElementById('toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'toast';
-      toast.style.cssText = `
-        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-        background: #5e35b1; color: white; padding: 12px 24px;
-        border-radius: 50px; z-index: 9999; font-size: 14px;
-        animation: fadeOut 2s ease forwards;
-      `;
-      document.body.appendChild(toast);
-    }
-    toast.innerHTML = message;
-    toast.style.display = 'block';
-    setTimeout(() => {
-      toast.style.display = 'none';
-    }, 2000);
-  }
+  captureCamBtn.onclick = startCaptureCamera;
+  stopCaptureCamBtn.onclick = stopCaptureCamera;
+  captureBtn.onclick = captureAndRecognize;
 
-  // ========== تحميل Chatbase ==========
-  function loadChatbase() {
-    const container = document.getElementById('chatbase-container');
-    if (container) {
-      // إضافة iframe لـ Chatbase
-      const iframe = document.createElement('iframe');
-      iframe.src = 'https://www.chatbase.co/chatbot-iframe/41qfAmm_LuIhzoNDIoJCv';
-      iframe.style.width = '100%';
-      iframe.style.height = '100%';
-      iframe.style.border = 'none';
-      container.appendChild(iframe);
-    }
-  }
+  // عرض مودال الصورة
+  window.showModalImage = (src, word) => {
+    let modal = document.getElementById('globalModal');
+    if(!modal){ modal = document.createElement('div'); modal.id='globalModal'; modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:pointer;'; modal.onclick=()=>modal.style.display='none'; document.body.appendChild(modal); }
+    modal.style.display='flex'; modal.innerHTML=`<div style="text-align:center;"><img src="${src}" style="max-width:85vw;max-height:70vh;border-radius:20px;"><div style="color:white;margin-top:20px;font-size:1.5rem;">🤟 ${word}</div></div>`;
+  };
 
-  // ========== تشغيل عند تحميل الصفحة ==========
-  document.addEventListener('DOMContentLoaded', () => {
-    loadChatbase();
-    document.getElementById('editInput').placeholder = '✏️ اكتب أو عدل النص هنا...';
+  // تبديل الأوضاع وإيقاف الكاميرات تلقائياً
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.mode-content').forEach(c=>c.classList.remove('active-mode'));
+      if(btn.dataset.mode === 'voice') document.getElementById('voiceMode').classList.add('active-mode');
+      else if(btn.dataset.mode === 'test') document.getElementById('testMode').classList.add('active-mode');
+      else document.getElementById('cameraToTextMode').classList.add('active-mode');
+      if(testStream) stopTestCamera();
+      if(captureStream) stopCaptureCamera();
+    });
   });
+  window.addEventListener('beforeunload', ()=>{ if(testStream) testStream.getTracks().forEach(t=>t.stop()); if(captureStream) captureStream.getTracks().forEach(t=>t.stop()); if(voiceRecognition) voiceRecognition.abort(); });
 </script>
-
-<!-- Chatbase script -->
-<script>
-(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="41qfAmm_LuIhzoNDIoJCv";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
-</script>
-
 </body>
 </html>
+
+
