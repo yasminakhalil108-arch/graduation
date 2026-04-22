@@ -1,709 +1,406 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="supabase.js"></script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign It - تسجيل الدخول</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script src="auth-manager.js"></script>
-  
-  <style>
-    :root {
-      --primary: #2563EB;
-      --primary-dark: #1D4ED8;
-      --secondary: #7C3AED;
-      --accent: #F59E0B;
-      --success: #10B981;
-      --white: #FFFFFF;
-      --light-grey: #F8FAFC;
-      --bg-gradient-1: #EFF6FF;
-      --text-dark: #0F172A;
-      --text-muted: #475569;
-      --alert-red: #EF4444;
-      --border: #E2E8F0;
-      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: "Segoe UI", "Tahoma", "Arial", sans-serif;
-      background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #7C3AED 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .login-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      width: 100%;
-      max-width: 1000px;
-      gap: 40px;
-      background: var(--white);
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: var(--shadow-lg);
-      animation: slideUp 0.6s ease-out;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .login-left {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      padding: 4rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      color: var(--white);
-    }
-
-    .login-left-icon {
-      font-size: 5rem;
-      margin-bottom: 1.5rem;
-      opacity: 0.9;
-    }
-
-    .login-left h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      font-weight: 800;
-    }
-
-    .login-left p {
-      font-size: 1.1rem;
-      opacity: 0.9;
-      line-height: 1.6;
-      margin-bottom: 2rem;
-    }
-
-    .login-features {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      text-align: right;
-    }
-
-    .feature-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      opacity: 0.9;
-    }
-
-    .feature-item i {
-      font-size: 1.5rem;
-    }
-
-    .login-right {
-      padding: 4rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .logo-section {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 2rem;
-    }
-
-    .logo-icon {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: var(--white);
-      border-radius: 10px;
-      font-size: 1.3rem;
-    }
-
-    .logo-text {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-size: 1.3rem;
-      font-weight: 900;
-    }
-
-    .login-right h2 {
-      font-size: 2rem;
-      color: var(--text-dark);
-      margin-bottom: 0.5rem;
-      font-weight: 700;
-    }
-
-    .login-subtitle {
-      color: var(--text-muted);
-      margin-bottom: 2rem;
-      font-size: 0.95rem;
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-      animation: fadeIn 0.6s ease-out forwards;
-      opacity: 0;
-    }
-
-    .form-group:nth-child(3) {
-      animation-delay: 0.1s;
-    }
-
-    .form-group:nth-child(4) {
-      animation-delay: 0.2s;
-    }
-
-    .form-group:nth-child(5) {
-      animation-delay: 0.3s;
-    }
-
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-      }
-    }
-
-    .form-label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: var(--text-dark);
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .form-input {
-      width: 100%;
-      padding: 0.9rem 1.2rem;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      font-size: 1rem;
-      font-family: inherit;
-      outline: none;
-      transition: all 0.3s;
-      background: var(--light-grey);
-    }
-
-    .form-input:focus {
-      border-color: var(--primary);
-      background: var(--white);
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-    }
-
-    .password-toggle {
-      position: absolute;
-      right: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-muted);
-      font-size: 1rem;
-      transition: all 0.3s;
-    }
-
-    .password-toggle:hover {
-      color: var(--primary);
-    }
-
-    .password-wrapper {
-      position: relative;
-    }
-
-    .error-message {
-      color: var(--alert-red);
-      font-size: 0.85rem;
-      margin-top: 0.4rem;
-      display: none;
-      animation: shake 0.3s ease-in-out;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-
-    .error-message.show {
-      display: block;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-
-    .btn {
-      flex: 1;
-      padding: 1rem;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-
-    .btn-login {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: var(--white);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-    }
-
-    .btn-login:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-    }
-
-    .btn-signup {
-      background: var(--light-grey);
-      color: var(--text-dark);
-      border: 2px solid var(--border);
-    }
-
-    .btn-signup:hover:not(:disabled) {
-      background: var(--border);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .btn-loading {
-      position: relative;
-    }
-
-    .btn-loading::after {
-      content: '';
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      border: 2px solid currentColor;
-      border-right-color: transparent;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin: 2rem 0;
-      color: var(--text-muted);
-    }
-
-    .divider-line {
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    .forgot-password {
-      text-align: center;
-      margin-top: 1.5rem;
-    }
-
-    .forgot-password a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.9rem;
-      transition: all 0.3s;
-    }
-
-    .forgot-password a:hover {
-      color: var(--secondary);
-      text-decoration: underline;
-    }
-
-    .terms {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-align: center;
-      margin-top: 1.5rem;
-      line-height: 1.5;
-    }
-
-    .terms a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    .success-message {
-      background: rgba(16, 185, 129, 0.1);
-      border: 2px solid var(--success);
-      color: var(--success);
-      padding: 1rem;
-      border-radius: 10px;
-      margin-bottom: 1rem;
-      display: none;
-      animation: slideDown 0.3s ease-out;
-    }
-
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .success-message.show {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    @media (max-width: 768px) {
-      .login-container {
-        grid-template-columns: 1fr;
-        gap: 0;
-      }
-
-      .login-left {
-        padding: 2rem;
-        border-radius: 20px 20px 0 0;
-      }
-
-      .login-left h1 {
-        font-size: 1.8rem;
-      }
-
-      .login-left-icon {
-        font-size: 3rem;
-      }
-
-      .login-right {
-        padding: 2rem;
-      }
-
-      .login-right h2 {
-        font-size: 1.5rem;
-      }
-
-      .form-actions {
-        flex-direction: column;
-      }
-
-      body {
-        padding: 10px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="login-container">
-    <!-- Left Section -->
-    <div class="login-left">
-      <div class="login-left-icon">
-        <i class="fas fa-hands"></i>
-      </div>
-      <h1>Sign It</h1>
-      <p>تعلم لغة الإشارة وتواصل مع العالم بسهولة 🤝</p>
-      
-      <div class="login-features">
-        <div class="feature-item">
-          <i class="fas fa-book"></i>
-          <span>دروس تفاعلية شاملة</span>
-        </div>
-        <div class="feature-item">
-          <i class="fas fa-star"></i>
-          <span>مساعد ذكي متقدم</span>
-        </div>
-        <div class="feature-item">
-          <i class="fas fa-users"></i>
-          <span>مجتمع داعم جداً</span>
-        </div>
-        <div class="feature-item">
-          <i class="fas fa-award"></i>
-          <span>شهادات معترف بها</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right Section -->
-    <div class="login-right">
-      <div class="logo-section">
-        <div class="logo-icon">
-          <i class="fas fa-hands"></i>
-        </div>
-        <span class="logo-text">Sign It</span>
-      </div>
-
-      <h2>أهلاً وسهلاً</h2>
-      <p class="login-subtitle">سجل دخولك أو أنشئ حساب جديد للبدء</p>
-
-      <div class="success-message" id="successMessage">
-        <i class="fas fa-check-circle"></i>
-        <span id="successText"></span>
-      </div>
-
-      <!-- Login Form -->
-      <form id="loginForm" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label class="form-label" for="email">
-            <i class="fas fa-envelope"></i> عنوان البريد الإلكتروني
-          </label>
-          <input 
-            type="email" 
-            id="email" 
-            class="form-input" 
-            placeholder="example@email.com"
-            required
-          >
-          <div class="error-message" id="emailError"></div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="password">
-            <i class="fas fa-lock"></i> كلمة المرور
-          </label>
-          <div class="password-wrapper">
-            <input 
-              type="password" 
-              id="password" 
-              class="form-input" 
-              placeholder="أدخل كلمة المرور"
-              required
-            >
-            <button type="button" class="password-toggle" onclick="togglePassword()">
-              <i class="fas fa-eye"></i>
-            </button>
-          </div>
-          <div class="error-message" id="passwordError"></div>
-        </div>
-
-        <div class="form-group">
-          <div class="forgot-password">
-            <a href="#" onclick="return handleForgot()">هل نسيت كلمة المرور؟</a>
-          </div>
-        </div>
-
-        <div class="form-actions" id="formActions">
-          <button type="submit" class="btn btn-login" id="loginBtn">
-            <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
-          </button>
-          <button type="button" class="btn btn-signup" onclick="window.location.href='signup.html'">
-            <i class="fas fa-user-plus"></i> إنشاء حساب جديد
-          </button>
-        </div>
-      </form>
-
-      <div class="terms">
-        بالمتابعة، أنت توافق على <a href="#">شروط الخدمة</a> و<a href="#">سياسة الخصوصية</a>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // ============================================
-    // Supabase Configuration
-    // ============================================
-    const supabaseUrl = 'https://vpwpafsqmnuogsoivfid.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwd3BhZnNxbW51b2dzb2l2ZmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MjQ0ODIsImV4cCI6MjA5MTUwMDQ4Mn0.RnnPZ4hc_0S7Nhx-Y9HE0dVW-Hs-wP56ISeF9BUeMtA';
-
-    let supabase = null;
-    let isLoading = false;
-
-    // Initialize Supabase
-    try {
-      supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-      console.log('✅ Supabase initialized');
-    } catch (error) {
-      console.error('❌ Supabase error:', error);
-      showError('emailError', 'فشل الاتصال بالخادم');
-    }
-
-    // Toggle Password Visibility
-    function togglePassword() {
-      const passwordField = document.getElementById('password');
-      const icon = event.target.closest('button').querySelector('i');
-      
-      if (passwordField.type === 'password') {
-        passwordField.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-      } else {
-        passwordField.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-      }
-    }
-
-    // Show Error Message
-    function showError(elementId, message) {
-      const element = document.getElementById(elementId);
-      element.textContent = message;
-      element.classList.add('show');
-      
-      setTimeout(() => {
-        element.classList.remove('show');
-      }, 5000);
-    }
-
-    // Show Success Message
-    function showSuccess(message) {
-      const element = document.getElementById('successMessage');
-      document.getElementById('successText').textContent = message;
-      element.classList.add('show');
-      
-      setTimeout(() => {
-        element.classList.remove('show');
-      }, 3000);
-    }
-
-    // Validate Email
-    function isValidEmail(email) {
-      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return regex.test(email);
-    }
-
-    // Handle Login
-    async function handleLogin(e) {
-      e.preventDefault();
-      
-      if (isLoading) return;
-
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const loginBtn = document.getElementById('loginBtn');
-
-      // Validation
-      document.getElementById('emailError').classList.remove('show');
-      document.getElementById('passwordError').classList.remove('show');
-
-      if (!email) {
-        showError('emailError', 'الرجاء إدخال البريد الإلكتروني');
-        return;
-      }
-
-      if (!isValidEmail(email)) {
-        showError('emailError', 'البريد الإلكتروني غير صحيح');
-        return;
-      }
-
-      if (!password || password.length < 6) {
-        showError('passwordError', 'كلمة المرور يجب أن تكون 6 أحرف على الأقل');
-        return;
-      }
-
-      isLoading = true;
-      loginBtn.disabled = true;
-      loginBtn.classList.add('btn-loading');
-
-      try {
-        if (!supabase) {
-          throw new Error('لم يتم الاتصال بالخادم');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تسجيل الدخول - Sign It">
+    <meta name="theme-color" content="#6366F1">
+    <title>تسجيل الدخول - Sign It</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
 
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 3rem 2rem;
+            width: 100%;
+            max-width: 420px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .login-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-brand-icon {
+            font-size: 2.5rem;
+            color: #7C3AED;
+        }
+
+        .login-brand-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #7C3AED;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            background: #fafaf9;
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.95rem 1.5rem;
+            background: linear-gradient(135deg, #7C3AED, #2563EB);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-divider {
+            text-align: center;
+            color: #94a3b8;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .signup-link {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .signup-link a {
+            color: #7C3AED;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .signup-link a:hover {
+            color: #2563EB;
+        }
+
+        .error-message {
+            background: #FEE2E2;
+            color: #B91C1C;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: none;
+            border-right: 4px solid #B91C1C;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .success-message {
+            background: #DCFCE7;
+            color: #15803D;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: none;
+            border-right: 4px solid #15803D;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .form-loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .login-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .login-title {
+                font-size: 1.5rem;
+            }
+
+            .login-brand-text {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- رأس تسجيل الدخول -->
+        <div class="login-header">
+            <div class="login-brand">
+                <span class="login-brand-icon"><i class="fas fa-hands"></i></span>
+                <span class="login-brand-text">Sign It</span>
+            </div>
+            <h1 class="login-title">تسجيل الدخول</h1>
+            <p class="login-subtitle">أدخل بيانات حسابك للمتابعة</p>
+        </div>
+
+        <!-- رسائل الخطأ والنجاح -->
+        <div id="errorMessage" class="error-message">
+            <i class="fas fa-exclamation-circle"></i> <span id="errorText"></span>
+        </div>
+        <div id="successMessage" class="success-message">
+            <i class="fas fa-check-circle"></i> <span id="successText"></span>
+        </div>
+
+        <!-- نموذج تسجيل الدخول -->
+        <form id="loginForm" action="https://formspree.io/f/xeevrbdg" method="POST">
+            <!-- حقل البريد الإلكتروني -->
+            <div class="form-group">
+                <label class="form-label">البريد الإلكتروني</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    id="email"
+                    class="form-input" 
+                    placeholder="أدخل بريدك الإلكتروني" 
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <!-- حقل كلمة المرور -->
+            <div class="form-group">
+                <label class="form-label">كلمة المرور</label>
+                <input 
+                    type="password" 
+                    name="password" 
+                    id="password"
+                    class="form-input" 
+                    placeholder="أدخل كلمة المرور" 
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <!-- حقل مخفي لنوع النموذج -->
+            <input type="hidden" name="form_type" value="login">
+
+            <!-- زر تسجيل الدخول -->
+            <button type="submit" id="loginBtn" class="login-btn">
+                <span id="btnText">تسجيل الدخول</span>
+            </button>
+        </form>
+
+        <!-- فاصل -->
+        <div class="form-divider">أو</div>
+
+        <!-- رابط إنشاء حساب جديد -->
+        <div class="signup-link">
+            ليس لديك حساب؟ 
+            <a href="signup.html">إنشاء حساب جديد</a>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const btnText = document.getElementById('btnText');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const successMessage = document.getElementById('successMessage');
+        const successText = document.getElementById('successText');
+
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // إخفاء الرسائل السابقة
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+
+            // الحصول على البيانات
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            // التحقق من الصحة
+            if (!email || !password) {
+                showError('يرجى ملء جميع الحقول');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showError('يرجى إدخال بريد إلكتروني صحيح');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                return;
+            }
+
+            // تعطيل الزر وإظهار المؤشر
+            loginBtn.disabled = true;
+            btnText.innerHTML = '<span class="form-loading"></span>جاري تسجيل الدخول...';
+
+            try {
+                // إرسال البيانات إلى Formspree
+                const response = await fetch('https://formspree.io/f/xeevrbdg', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        form_type: 'login',
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (response.ok) {
+                    // حفظ بيانات المستخدم في localStorage
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('isAuthenticated', 'true');
+                    localStorage.setItem('loginTime', new Date().toISOString());
+
+                    // إظهار رسالة النجاح
+                    successText.textContent = 'تم تسجيل الدخول بنجاح! جاري التحويل...';
+                    successMessage.classList.add('show');
+
+                    // التحويل إلى الصفحة الرئيسية بعد 1.5 ثانية
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    throw new Error('فشل التحقق من البيانات');
+                }
+            } catch (error) {
+                showError('حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى');
+                console.error('Error:', error);
+                
+                // إعادة تفعيل الزر
+                loginBtn.disabled = false;
+                btnText.innerHTML = 'تسجيل الدخول';
+            }
         });
 
-        if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            showError('emailError', 'البريد الإلكتروني أو كلمة المرور غير صحيحة');
-          } else {
-            showError('emailError', error.message || 'حدث خطأ في تسجيل الدخول');
-          }
-          console.error('Login error:', error);
-        } else {
-          showSuccess('تم تسجيل الدخول بنجاح! ✅');
-          
-          // Store user data
-          localStorage.setItem('userEmail', email);
-          localStorage.setItem('isAuthenticated', 'true');
-          
-          // Redirect to learning lab after delay
-          setTimeout(() => {
-            window.location.href = 'learning-lab.html';
-          }, 1500);
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.add('show');
+            loginBtn.disabled = false;
+            btnText.innerHTML = 'تسجيل الدخول';
         }
-      } catch (error) {
-        showError('emailError', 'خطأ: ' + error.message);
-        console.error('Error:', error);
-      } finally {
-        isLoading = false;
-        loginBtn.disabled = false;
-        loginBtn.classList.remove('btn-loading');
-      }
-    }
 
-    // Show Signup Form - سيتم نقله إلى صفحة signup منفصلة
-    async function showSignupForm() {
-      window.location.href = 'signup.html';
-    }
-
-    // Handle Forgot Password
-    function handleForgot() {
-      alert('سيتم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني قريباً');
-      return false;
-    }
-
-    // Check if user is already logged in
-    async function checkUser() {
-      try {
-        if (!supabase) return;
-        
-        const { data } = await supabase.auth.getUser();
-        
-        if (data.user) {
-          window.location.href = 'index.html';
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
         }
-      } catch (error) {
-        console.error('Check user error:', error);
-      }
-    }
 
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-      checkUser();
-      console.log('✅ Login page loaded');
-    });
-  </script>
+        // مسح الأخطاء عند الكتابة
+        document.getElementById('email').addEventListener('focus', () => {
+            errorMessage.classList.remove('show');
+        });
 
+        document.getElementById('password').addEventListener('focus', () => {
+            errorMessage.classList.remove('show');
+        });
+    </script>
 </body>
 </html>
